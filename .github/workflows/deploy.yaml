@@ -1,0 +1,31 @@
+name: Deploy to WordPress
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+      
+      - name: Build
+        run: |
+          npm ci
+          npm run build
+      
+      - name: Deploy via SFTP
+        uses: pressidium/lftp-mirror-action@v1
+        with:
+          host: ${{ secrets.SFTP_SERVER }}
+          user: ${{ secrets.SFTP_USERNAME }}
+          pass: ${{ secrets.SFTP_PASSWORD }}
+          sftp: true
+          localDir: build
+          remoteDir: /home/dh_mrmrga/data-driven-hockey.com/wp-content/plugins/ddh-live-tracker
+          options: --delete --exclude-glob=*.php
