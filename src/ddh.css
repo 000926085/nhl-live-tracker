@@ -1,3 +1,23 @@
+#ddh-app-root {
+  font-size: 16px !important;
+  line-height: 1.2 !important;
+  box-sizing: border-box;
+}
+
+#ddh-app-root .selectedGame h1 {
+  font-size: 2rem !important;
+  margin: 0 !important;
+}
+
+#ddh-app-root .selectedGame h2 {
+  font-size: 1.1rem !important; 
+  margin: 0 !important;
+}
+
+#ddh-app-root * {
+  box-sizing: border-box;
+}
+
 .container {
     display: flex;
     justify-content: center; 
