@@ -159,7 +159,6 @@ function GameState() {
  */
 const AllGames = ({ date }) => {
   const [games, setGames] = useState(null);
-  const [index, setIndex] = useState(0);
 
   useEffect(() => {
     const fetchIds = async () => {
