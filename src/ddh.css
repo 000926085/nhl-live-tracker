@@ -1,0 +1,38 @@
+.ddh {
+    background: linear-gradient(180deg, rgba(48, 90, 146, 1) 0%, rgba(6, 39, 255, 1) 100%);
+    border: 2px solid #FFF;
+    border-radius: 25px;
+    color: white;
+}
+
+.flex {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.gameHeader {
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 25px;
+  text-align: center;
+  display: inline-block;
+  padding: 4px 12px;
+}
+
+.highlight {
+  color: #19D3D9;
+  font-style: italic;      
+  margin-right: 10px;
+}
+
+.logo {
+  width: 140px;          
+  height: auto; 
+  display: block;      
+}
+
+.dashboard {
+  color: white;
+  font-weight: bold;
+  text-align: center;
+}

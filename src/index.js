@@ -14,8 +14,5 @@ root.render(
     <BrowserRouter>
       <App pageId={pageId} />
     </BrowserRouter>
-    <div>
-      <h1>Hello World!</h1>
-    </div>
   </React.StrictMode>
 );

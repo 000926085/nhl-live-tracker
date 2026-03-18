@@ -11,3 +11,94 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.title {
+  color: white;
+  font-weight: bold;
+  text-align: center;
+}
+
+.flex {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.gameCard {
+  background: linear-gradient(180deg,rgba(38, 132, 255, 1) 0%, rgba(23, 79, 153, 1) 100%);
+  border: 2px solid #19D3D9;
+  border-radius: 25px;
+  margin: 0 5px 0 5px;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center; 
+  justify-content: space-between;
+}
+
+.gameCard h2 {
+  margin-bottom: 0;
+  margin-top: 10px;
+}
+
+.gameHeader {
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 25px;
+  text-align: center;
+  display: inline-block;
+  padding: 4px 12px;
+}
+
+.highlight {
+  color: #19D3D9;
+  font-style: italic;      
+  margin-right: 10px;
+}
+
+.scoreContainer {
+  display: flex;        
+  align-items: center;    
+  justify-content: center; 
+  gap: 30px;    
+  width: 100%;
+}
+
+.teamSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.teamSection h2 {
+  margin: 5px 0 0 0;
+  line-height: 1;
+}
+
+.score {
+  font-weight: bold;
+  margin: 0;
+}
+
+.logo {
+  width: 70px;          
+  height: auto; 
+  display: block;      
+}
+
+.btn {
+  border-radius: 25px;
+  color: white;
+  font-weight: bold;
+  padding: 4px 12px;
+}
+
+.btn_on {
+  background: linear-gradient(180deg,rgba(38, 132, 255, 1) 0%, rgba(23, 79, 153, 1) 100%);
+  border: 2px solid #19D3D9;
+}
+
+.btn_off {
+  background: linear-gradient(180deg, #899FBC, #3F4855);
+  border: 2px solid #678D8E;
+}
