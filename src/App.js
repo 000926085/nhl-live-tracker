@@ -92,32 +92,37 @@ const GameStatistics = ({ game, shots }) => {
 }
 
 const SelectedGame = ({ game, shots }) => {
-  if (!game || !shots) {
-    return <div><p>Loading!</p></div>
-  }
+  if (!game || !shots) { return <div>Loading!</div> }
 
   return (
-    <div className='container'>
+    <div className='selectedContainer'>
       <div className='selectedGame'>
-        <div className='container'>
-          <h2 className='gameHeader'><span className='highlight'>P3</span>{game.period.timeRemaining}</h2>
+
+        {/* Period/Time Remaining */}
+        <div className='headerRow'>
+            <h2 className='gameHeader'>
+              <span className='highlight'>P3</span>{game.period.timeRemaining}
+            </h2>
         </div>
-        <div className='container'>
-          <div>
+
+        {/* Teams and Score */}
+        <div className='scoreRow'>
+          <div className='teamSection'>
             <img className='logo' src={`https://assets.nhle.com/logos/nhl/svg/${game.teams.home.abbrev}_light.svg`} alt="Home Logo" />
             <h2>{(game.teams.home.name).slice((game.teams.home.name).indexOf(' ')+1)}</h2>
           </div>
           
-          <div>
-            <h1>{game.teams.home.score} - {game.teams.away.score}</h1>
+          <div className='scoreSection'>
+            <h1 className='scoreText'>{game.teams.home.score} - {game.teams.away.score}</h1>
             <p style={{ visibility: 'hidden' }}>hidden</p>
           </div>
 
-          <div>
+          <div className='teamSection'>
             <img className='logo' src={`https://assets.nhle.com/logos/nhl/svg/${game.teams.away.abbrev}_light.svg`} alt="Away Logo"/>
             <h2>{(game.teams.away.name).slice((game.teams.away.name).indexOf(' ')+1)}</h2>
           </div>
         </div>
+
       </div>
     </div>
   )

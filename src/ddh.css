@@ -1,12 +1,3 @@
-.selectedGame {
-    background: linear-gradient(180deg, rgba(48, 90, 146, 1) 0%, rgba(6, 39, 255, 1) 100%);
-    border: 2px solid #FFF;
-    border-radius: 25px;
-    color: white;
-    width: 90%; 
-    max-width: 600px;
-}
-
 .container {
     display: flex;
     justify-content: center; 
@@ -32,16 +23,16 @@
   margin: 10px 0;
 }
 
+.headerRow {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
 .highlight {
   color: #19D3D9;
   font-style: italic;      
   margin-right: 10px;
-}
-
-.logo {
-  width: 140px;          
-  height: auto; 
-  display: block;      
 }
 
 .dashboard {
@@ -77,4 +68,57 @@
   font-weight: bold;
   text-align: center;
   font-size: 1.5rem;
+}
+
+.selectedContainer {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.selectedGame {
+    background: linear-gradient(180deg, rgba(48, 90, 146, 1) 0%, rgba(6, 39, 255, 1) 100%);
+    border: 2px solid #FFF;
+    border-radius: 25px;
+    color: white;
+    width: 100%; 
+    max-width: 600px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.scoreRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.scoreSection {
+  flex: 0 0 auto;
+  padding: 0 10px;
+}
+
+.teamSection {
+  flex: 1; 
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.scoreText {
+  font-size: 2rem;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.logo {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
 }
