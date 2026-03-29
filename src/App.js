@@ -5,53 +5,53 @@ import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import './index.css';
 import './ddh.css';
-import rink from './assets/hockeyrink.png';
 import { TEAM_COLORS } from './constants/colours.js';
 
-const Shot = ({ data, onClick }) => {
-  const primary = TEAM_COLORS[data.eventOwnerTeam].primary;
-  const secondary = TEAM_COLORS[data.eventOwnerTeam].secondary;
-
-  switch (data.typeDescKey) {
-    case 'shot-on-goal':
-      return (
-        <svg height="50" width="50" xmlns="http://www.w3.org/2000/svg" onClick={onClick}>
-          <circle r="20" cx="25" cy="25" fill={primary} stroke={secondary} strokeWidth="1.5" />
-        </svg>
-      )
-
-    default:
-      return (
-        <svg height="50" width="50" xmlns="http://www.w3.org/2000/svg" onClick={onClick}>
-          <circle r="20" cx="25" cy="25" fill={primary} stroke={secondary} strokeWidth="1.5" />
-        </svg>
-      )
-  }
-}
-
-const ShotMap = ({ arr }) => {
-  const [selectedShot, setShot] = useState(null);
-  const [imgSize, setImgSize] = useState({width: 0, height: 0});
-
-  console.log(imgSize); // this is just so eslint won't whine about an unused var...
-
+const SVGRink = ( {arr} ) => {
   if (!arr) { return <div>Loading!</div> }
-  else if (arr.length === 0) { return <div>No shots found for the selected game.</div>}
-
-  const onLoadImage = (e) => {
-    const { width, height } = e.currentTarget;
-    setImgSize({ width, height });
-  };
 
   return (
-    <div>
-      <p>{selectedShot ? JSON.stringify(selectedShot, null, 2) : "No shot selected!"}</p>
-      {arr.map((s) => (
-        <Shot key={s.id} data={s} onClick={() => setShot(s)} />
-      ))}
-      <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-        <img src={rink} className="rink" alt="Blank hockey rink." onLoad={onLoadImage} />
-      </div>
+    <div style={{width: "90%"}}>
+      <svg viewBox="0 0 200 85">
+        {/* Rink Boundary */}
+        <rect x="0" y="0" width="200" height="85" rx="15" ry="15" fill="#f0f0f0" stroke="black" strokeWidth="1" />
+
+        {/* Centre */}
+        <circle cx="100" cy="42.5" r="12.5" fill="none" stroke="rgb(0, 102, 204)" strokeWidth="0.75" />
+        <circle cx="100" cy="42.5" r="0.5" stroke="rgb(0, 102, 204)" />
+
+        {/* Blue Lines */}
+        <line x1="75" y1="0" x2="75" y2="85" stroke="rgb(0, 102, 204)" strokeWidth="1.5" />
+        <line x1="125" y1="0" x2="125" y2="85" stroke="rgb(0, 102, 204)" strokeWidth="1.5" />
+
+        {/* Red Lines */}
+        <line x1="11" y1="0" x2="11" y2="85" stroke="rgb(200, 16, 46)" strokeWidth="1" />
+        <line x1="189" y1="0" x2="189" y2="85" stroke="rgb(200, 16, 46)" strokeWidth="1" />
+
+        {/* End Zone Faceoff Circles */}
+        <circle cx="35" cy="21.25" r="12.5" fill="none" stroke="rgb(200, 16, 46)" strokeWidth="0.75" />
+        <circle cx="35" cy="63.75" r="12.5" fill="none" stroke="rgb(200, 16, 46)" strokeWidth="0.75" />
+        <circle cx="165" cy="21.25" r="12.5" fill="none" stroke="rgb(200, 16, 46)" strokeWidth="0.75" />
+        <circle cx="165" cy="63.75" r="12.5" fill="none" stroke="rgb(200, 16, 46)" strokeWidth="0.75" />
+
+        {/* Shot Mapping */}
+        {arr.map((s) => (
+          <circle
+            key={s.id}
+            cx={s.coords.xCoord + 100}
+            cy={42.5 - s.coords.yCoord}
+            r="1.5"
+            fill={TEAM_COLORS[s.eventOwnerTeam].primary}
+            fillOpacity="0.66"
+            stroke={TEAM_COLORS[s.eventOwnerTeam].primary}
+            strokeWidth="0.2"
+            style={{ cursor: "pointer" }}
+          />
+        ))}
+
+        {/* Cover for any clipping lines */}
+        <rect x="0" y="0" width="200" height="85" rx="15" fill="none" stroke="black" strokeWidth="2" />
+      </svg>
     </div>
   )
 }
@@ -285,7 +285,8 @@ const GameStatistics = ({ game }) => {
 
   return (
     <div style={{color: 'white'}}>
-      <ShotMap key={game.id} arr={shotsArr} />
+      <SVGRink key={game.id} arr={shotsArr} />
+      {/* <ShotMap key={game.id} arr={shotsArr} /> */}
       <h2 className='dashboard'>Game Statistics | {game.lastUpdated}</h2>
       <table style={{border: '1px solid white', textAlign: 'center'}}>
         <thead>

@@ -157,7 +157,8 @@
     color: white;
 }
 
-.rink {
-  width: 80%;
+.svgrink {
+  width: 80%; 
   height: auto;
+  background-color: #f0f0f0;
 }
