@@ -157,8 +157,14 @@
     color: white;
 }
 
-.svgrink {
-  width: 80%; 
-  height: auto;
-  background-color: #f0f0f0;
+.rinkcard {
+  width: 90%;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(180deg, rgba(48, 90, 146, 1) 0%, rgba(6, 39, 255, 1) 100%);
+  border: 2px solid #FFF;
+  border-radius: 25px;
 }

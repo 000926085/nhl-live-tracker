@@ -7,53 +7,116 @@ import './index.css';
 import './ddh.css';
 import { TEAM_COLORS } from './constants/colours.js';
 
+/**
+ * 
+ * @param {*} arr array containing the shots for the selected game. 
+ * @returns a div holding the SVG representation of a hockey rink.
+ */
 const SVGRink = ( {arr} ) => {
+  const [selectedShot, setSelectedShot] = useState(null);
   if (!arr) { return <div>Loading!</div> }
 
   return (
-    <div style={{width: "90%"}}>
-      <svg viewBox="0 0 200 85">
+    <div style={{width: "95%"}}>
+      {selectedShot && (
+       <p>{JSON.stringify(selectedShot, null, 2)}</p>
+      )}
+      
+      <svg viewBox="-1 -1 202 87">
         {/* Rink Boundary */}
-        <rect x="0" y="0" width="200" height="85" rx="15" ry="15" fill="#f0f0f0" stroke="black" strokeWidth="1" />
+        <rect x="0" y="0" width="200" height="85" rx="15" ry="15" fill="#f0f0f0" stroke="black" strokeWidth="0.33" />
 
         {/* Centre */}
-        <circle cx="100" cy="42.5" r="12.5" fill="none" stroke="rgb(0, 102, 204)" strokeWidth="0.75" />
+        <line x1="100" y1="0" x2="100" y2="85" stroke="rgb(200, 16, 46)" strokeWidth="0.33" strokeDasharray="1, 1" />
+        <circle cx="100" cy="42.5" r="12.5" fill="none" stroke="rgb(0, 102, 204)" strokeWidth="0.33" />
         <circle cx="100" cy="42.5" r="0.5" stroke="rgb(0, 102, 204)" />
 
         {/* Blue Lines */}
-        <line x1="75" y1="0" x2="75" y2="85" stroke="rgb(0, 102, 204)" strokeWidth="1.5" />
-        <line x1="125" y1="0" x2="125" y2="85" stroke="rgb(0, 102, 204)" strokeWidth="1.5" />
+        <line x1="75" y1="0" x2="75" y2="85" stroke="rgb(0, 102, 204)" strokeWidth="0.66" />
+        <line x1="125" y1="0" x2="125" y2="85" stroke="rgb(0, 102, 204)" strokeWidth="0.66" />
 
         {/* Red Lines */}
-        <line x1="11" y1="0" x2="11" y2="85" stroke="rgb(200, 16, 46)" strokeWidth="1" />
-        <line x1="189" y1="0" x2="189" y2="85" stroke="rgb(200, 16, 46)" strokeWidth="1" />
+        <line x1="11" y1="0.5" x2="11" y2="84.5" stroke="rgb(200, 16, 46)" strokeWidth="0.33" />
+        <line x1="189" y1="0.5" x2="189" y2="84.5" stroke="rgb(200, 16, 46)" strokeWidth="0.33" />
+
+        {/* Neutral Zone Faceoff Dots */}
+        <circle cx="82.5" cy="21.25" r="0.5" stroke="rgb(200, 16, 46)" />
+        <circle cx="82.5" cy="63.75" r="0.5" stroke="rgb(200, 16, 46)" />
+        <circle cx="117.5" cy="21.25" r="0.5" stroke="rgb(200, 16, 46)" />
+        <circle cx="117.5" cy="63.75" r="0.5" stroke="rgb(200, 16, 46)" />
 
         {/* End Zone Faceoff Circles */}
-        <circle cx="35" cy="21.25" r="12.5" fill="none" stroke="rgb(200, 16, 46)" strokeWidth="0.75" />
-        <circle cx="35" cy="63.75" r="12.5" fill="none" stroke="rgb(200, 16, 46)" strokeWidth="0.75" />
-        <circle cx="165" cy="21.25" r="12.5" fill="none" stroke="rgb(200, 16, 46)" strokeWidth="0.75" />
-        <circle cx="165" cy="63.75" r="12.5" fill="none" stroke="rgb(200, 16, 46)" strokeWidth="0.75" />
+        <circle cx="35" cy="21.25" r="12.5" fill="none" stroke="rgb(200, 16, 46)" strokeWidth="0.33" />
+        <circle cx="35" cy="21.25" r="0.5" stroke="rgb(200, 16, 46)" />
+        <circle cx="35" cy="63.75" r="12.5" fill="none" stroke="rgb(200, 16, 46)" strokeWidth="0.33" />
+        <circle cx="35" cy="63.75" r="0.5" stroke="rgb(200, 16, 46)" />
+        <circle cx="165" cy="21.25" r="12.5" fill="none" stroke="rgb(200, 16, 46)" strokeWidth="0.33" />
+        <circle cx="165" cy="21.25" r="0.5" stroke="rgb(200, 16, 46)" />
+        <circle cx="165" cy="63.75" r="12.5" fill="none" stroke="rgb(200, 16, 46)" strokeWidth="0.33" />
+        <circle cx="165" cy="63.75" r="0.5" stroke="rgb(200, 16, 46)" />
+
+        {/* Referee and Goal Creases */}
+        <path d="M 90 0 A 10 10 0 0 0 110 0" fill="none" stroke="rgb(200, 16, 46)" strokeWidth="0.33" />
+        <path d="M 90 85 A 10 10 0 0 1 110 85" fill="none" stroke="rgb(200, 16, 46)" strokeWidth="0.33" />
+        <path d="M 11 36.5 A 6 6 0 0 1 11 48.5" fill="rgba(0, 150, 255, 0.2)" stroke="rgb(200, 16, 46)" strokeWidth="0.33" />
+        <path d="M 189 36.5 A 6 6 0 0 0 189 48.5" fill="rgba(0, 150, 255, 0.2)" stroke="rgb(200, 16, 46)" strokeWidth="0.33" />
 
         {/* Shot Mapping */}
         {arr.map((s) => (
-          <circle
-            key={s.id}
-            cx={s.coords.xCoord + 100}
-            cy={42.5 - s.coords.yCoord}
-            r="1.5"
-            fill={TEAM_COLORS[s.eventOwnerTeam].primary}
-            fillOpacity="0.66"
-            stroke={TEAM_COLORS[s.eventOwnerTeam].primary}
-            strokeWidth="0.2"
-            style={{ cursor: "pointer" }}
-          />
+          <Shot key={s.id} shot={s} selected={selectedShot?.id === s.id} onClick={() => setSelectedShot(s)}/>
         ))}
 
         {/* Cover for any clipping lines */}
-        <rect x="0" y="0" width="200" height="85" rx="15" fill="none" stroke="black" strokeWidth="2" />
+        <rect x="0" y="0" width="200" height="85" rx="15" fill="none" stroke="black" strokeWidth="0.33" />
       </svg>
     </div>
   )
+}
+
+/**
+ * 
+ * @param {Object} shot contains the data pertaining to a shot
+ * @param {boolean} selected true if the id of the selected shot matches this shot 
+ * @param {Function} onClick callback function triggered when this shot is clicked
+ * @returns {JSX.Element} represents a shot made during this game
+ */
+const Shot = ( {shot, selected, onClick} ) => {
+  const x = shot.coords.xCoord + 100
+  const y = 42.5 - shot.coords.yCoord
+
+  const common = {
+    key: shot.id,
+    fill: TEAM_COLORS[shot.eventOwnerTeam].primary,
+    fillOpacity: selected ? 1 : 0.75,
+    stroke: selected ? 'rgba(235, 235, 235, 0.76)' : TEAM_COLORS[shot.eventOwnerTeam].primary,
+    strokeWidth: 0.2,
+    style: { cursor: "pointer" },
+    onClick: onClick
+  }
+
+  switch(shot.typeDescKey) {
+    case 'shot-on-goal':
+      return (
+        <circle {...common} cx={x} cy={y} r="1.5" />
+      )
+
+    case 'goal':
+      return (
+        <polygon {...common} points={`${x},${y - 2.1} ${x - 1.8},${y + 1.0} ${x + 1.8},${y + 1.0}`} />
+      )
+
+    case 'missed-shot':
+      const s = 5.5 / 2
+      return (
+        <rect {...common} x={x - s} y={y - s} height={s} width={s} rx="0.5" />
+      )
+
+    default:
+      const [dx, dy] = [2.0, 2.0];
+      return (
+        <polygon {...common} points={`${x},${y - dy} ${x + dx},${y} ${x},${y + dy} ${x - dx},${y}`} />
+      )
+  }
 }
 
 /**
@@ -257,12 +320,79 @@ const ChosenGame = ({ game }) => {
 }
 
 /**
- * Constructs a table to provide a shots summary of the selected game.
+ * Generalized implementation of a dropdown menu for various types of filters.
+ * @param {String} category key of a dropdownOptions item
+ * @param {dict} options label and value of the dropdownOptions item
+ * @param {arr} selected array of the currently selected checkbox values
+ * @param {Function} onToggle callback to handle behaviour when selecting or unselecting a checkbox
+ * @returns {JSX.Element} a dropdown menu containing checkboxes
+ */
+const ToggleMenu = ({ category, options, selected, onToggle}) => {
+  const [active, setActive] = useState(false);
+
+  return (
+    <div>
+      <label>{category}</label>
+      <div onClick={() => setActive(!active)}>
+        {selected.length} selected <span>{active ? '▲' : '▼'}</span>
+      </div>
+
+      {active && (
+        <div>
+          {options.map(o => (
+            <div key={o.value} onClick={() => onToggle(o.value)}>
+              <input type="checkbox" checked={selected.includes(o.value)} readOnly/>
+              {o.label}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+/**
+ * 
  * @param {object} game represents a game, along with its data and shot data.
  * @returns table containing a tally of the shots, sorted by type, for each team.
  */
 const GameStatistics = ({ game }) => {
+  // Stores the currently selected filters.
+  const [filters, setFilters] = useState({
+    shotType: ['goal', 'shot-on-goal', 'missed-shot', 'blocked-shot'],
+    period: [1, 2, 3],
+  });
+
   if (!game) { return <div><p>Loading!</p></div> }
+
+  // Labels and values for each dropdown menu.
+  const dropdownOptions = {
+    shotType: [
+      { label: 'Goals', value: 'goal' },
+      { label: 'Shots on Goal', value: 'shot-on-goal' },
+      { label: 'Missed Shots', value: 'missed-shot' },
+      { label: 'Blocked Shots', value: 'blocked-shot' },
+    ],
+
+    period: [
+      { label: '1st', value: 1 },
+      { label: '2nd', value: 2 },
+      { label: '3rd', value: 3 }
+    ]
+
+    // dynamically load player names here...
+  }
+
+  // Helper function to generalize the toggling functionality for dropdown menus.
+  const toggleFilter = (category, value) => {
+    setFilters(prev => ({
+      ...prev, 
+      [category]: prev[category].includes(value)
+        ? prev[category].filter(v => v !== value) // remove from filters
+        : [...prev[category], value]  // add to filters
+    }));
+  };
+
   const shotsArr = game.shots?.shots || [];
 
   // Loop through the fetched shots and organize them by team, then type.
@@ -283,10 +413,26 @@ const GameStatistics = ({ game }) => {
   // Get the amount of shots of a given type if it exists, 0 if it does not.
   const getCount = (abbrev, type) => sorted[abbrev]?.[type] || 0;
 
+  // Filter out shots that do not meet the specified filters.
+  const filteredShots = shotsArr.filter(s => {
+    const typeMatch = filters.shotType.includes(s.typeDescKey);
+    const periodMatch = filters.period.includes(s.period.number);
+    return typeMatch && periodMatch;
+  });
+
   return (
     <div style={{color: 'white'}}>
-      <SVGRink key={game.id} arr={shotsArr} />
-      {/* <ShotMap key={game.id} arr={shotsArr} /> */}
+      {/* Rink and Toggles */}
+      <div className='rinkcard'>
+        <h2 className='gameHeader'>Shotmap | <i>Last Updated: {game.lastUpdated}</i></h2>
+        <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center'}}>
+          {Object.entries(dropdownOptions).map(([category, options]) => (
+            <ToggleMenu key={category} category={category} options={options} selected={filters[category]} onToggle={(v) => toggleFilter(category, v)} />
+          ))}
+        </div>    
+        <SVGRink key={game.id} arr={filteredShots} />
+      </div>
+
       <h2 className='dashboard'>Game Statistics | {game.lastUpdated}</h2>
       <table style={{border: '1px solid white', textAlign: 'center'}}>
         <thead>
@@ -328,7 +474,7 @@ function App({ pageId }) {
   // const [value, onChange] = useState(new Date());
 
   return (
-    <div style={{backgroundColor: "black"}}>
+    <div style={{backgroundColor: 'black'}}>
       <Calendar onChange={onChange} value={date} />
       <h1 className='dashboard'>{date.toLocaleDateString('en-ZA')} | Games</h1>
       <AllGames date={date} />
