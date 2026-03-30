@@ -86,9 +86,9 @@ const Shot = ( {shot, selected, onClick} ) => {
 
   const common = {
     key: shot.id,
-    fill: TEAM_COLORS[shot.eventOwnerTeam].primary,
+    fill: TEAM_COLORS[shot.eventOwnerTeam]?.primary ?? "#FFD700",
     fillOpacity: selected ? 1 : 0.75,
-    stroke: selected ? 'rgba(235, 235, 235, 0.76)' : TEAM_COLORS[shot.eventOwnerTeam].primary,
+    stroke: selected ? 'rgba(235, 235, 235, 0.76)' : (TEAM_COLORS[shot.eventOwnerTeam]?.primary ?? "#FFD700"),
     strokeWidth: 0.2,
     style: { cursor: "pointer" },
     onClick: onClick
@@ -212,11 +212,13 @@ const AllGames = ({ date }) => {
         name: data.teams?.home?.name ?? '',
         abbrev: data.teams?.home?.abbrev ?? '',
         score: data.teams?.home?.score ?? 0,
+        players: data.teams?.home?.players ?? [],
       },
       away: {
         name: data.teams?.away?.name ?? '',
         abbrev: data.teams?.away?.abbrev ?? '',
         score: data.teams?.away?.score ?? 0,
+        players: data.teams?.away?.players ?? [],
       },
       shots: shots
     };
@@ -361,7 +363,24 @@ const GameStatistics = ({ game }) => {
   const [filters, setFilters] = useState({
     shotType: ['goal', 'shot-on-goal', 'missed-shot', 'blocked-shot'],
     period: [1, 2, 3],
+    position: ["C", "D", "G", "L", "R"],
+    players: []
   });
+
+  // Handles setting a new roster once another game is selected.
+  useEffect(() => {
+    if (game) {
+      const newPlayers = [
+        ...game.home.players,
+        ...game.away.players
+      ];
+      
+      setFilters(prev => ({
+        ...prev,
+        players: newPlayers
+      }));
+    }
+  }, [game]);
 
   if (!game) { return <div><p>Loading!</p></div> }
 
@@ -378,9 +397,23 @@ const GameStatistics = ({ game }) => {
       { label: '1st', value: 1 },
       { label: '2nd', value: 2 },
       { label: '3rd', value: 3 }
-    ]
+    ],
 
-    // dynamically load player names here...
+    position: [
+      { label: 'Center', value: 'C' },
+      { label: 'Defenceman', value: 'D' },
+      { label: 'Goalie', value: 'G' },
+      { label: 'Left Wing', value: 'L' },
+      { label: 'Right Wing', value: 'R' },
+    ],
+
+    players: [
+      ...game.home.players,
+      ...game.away.players
+    ].map(p => ({
+      label: p, 
+      value: p 
+    }))
   }
 
   // Helper function to generalize the toggling functionality for dropdown menus.
@@ -417,7 +450,9 @@ const GameStatistics = ({ game }) => {
   const filteredShots = shotsArr.filter(s => {
     const typeMatch = filters.shotType.includes(s.typeDescKey);
     const periodMatch = filters.period.includes(s.period.number);
-    return typeMatch && periodMatch;
+    const positionMatch = filters.position.includes(s.player?.position);
+    const playerMatch = filters.players.includes(s.player?.shootingPlayer);
+    return typeMatch && periodMatch && positionMatch && playerMatch;
   });
 
   return (
