@@ -258,9 +258,9 @@
     flex-direction: row !important;
     align-items: center !important;
     justify-content: center !important;
-    gap: 15px !important;
+    gap: 8px !important;
     width: 100% !important;
-    padding-bottom: 12px !important;
+    padding: 5px 0 10px 0 !important;
 }
 
 #ddh-app-root .teamC {
@@ -274,7 +274,7 @@
     margin: 0 !important;
     line-height: 1 !important;
     white-space: nowrap !important;
-    font-size: 1.6rem;
+    font-size: 2.0rem;
     font-weight: 700;
 }
 
@@ -300,10 +300,10 @@
 #ddh-app-root .gameHeader {
     background-color: rgba(0, 0, 0, 0.5) !important;
     border-radius: 25px !important;
-    padding: 4px 12px !important;
+    padding: 6px 16px !important;
     margin-top: 8px !important; 
     margin-bottom: 2px !important;
-    font-size: 0.9rem !important;
+    font-size: 1.1rem !important;
     font-weight: 700 !important;
     line-height: 1.2 !important; 
     display: inline-block !important;
