@@ -226,6 +226,8 @@
   }
 }
 
+/* --- WordPress Overrides Begin Here! --- */
+
 #ddh-app-root {
   font-size: 16px !important;
   line-height: 1.2 !important;
@@ -281,4 +283,30 @@
     height: 120px !important;
     display: block !important;
     object-fit: contain !important;
+}
+
+#ddh-app-root .headerR {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    height: auto !important;
+    min-height: unset !important;
+    line-height: 0 !important; 
+}
+
+#ddh-app-root .gameHeader {
+    background-color: rgba(0, 0, 0, 0.5) !important;
+    border-radius: 25px !important;
+    padding: 4px 12px !important;
+    margin-top: 8px !important; 
+    margin-bottom: 2px !important;
+    font-size: 0.9rem !important;
+    font-weight: 700 !important;
+    line-height: 1.2 !important; 
+    display: inline-block !important;
+    color: white !important;
+    text-align: center !important;
 }
