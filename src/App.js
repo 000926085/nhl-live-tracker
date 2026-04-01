@@ -171,6 +171,59 @@ function StrengthToggle() {
   );
 }
 
+const GameCard = ({ game, selected, onSelect }) => {
+  if (!game) { return <p className='centered'>Loading!</p> }
+
+  // Determine how to fill the header text.
+  const gameStatus = (c) => {
+    switch (c.gameState) {
+      case 'FUT':
+        return (
+          <span className='highlight'>{c.scheduled} | EST</span>
+        );
+
+      case 'LIVE':
+        return (
+          <><span className='highlight'>P{c.period}</span>{c.timeRemaining}</>
+        );
+
+      case 'OFF':
+        return (
+          <span>FINAL</span>
+        );
+
+      default:
+        return <span></span>;
+    }
+  };
+
+  return (
+    <div className='gameCard' style={selected ? { border: "2px solid #072c7e" } : {}} onClick={onSelect}>
+      {/* Period/Time Info */}
+      <div className='headerRow'>
+        <h2 className='gameHeader'>{gameStatus(game)}</h2>
+      </div>
+
+      {/* Score and Team Icons */}
+      <div className='scoreRow'>
+        <div className='teamCol'>
+          <img className='teamLogo' src={`https://assets.nhle.com/logos/nhl/svg/${game.home.abbrev}_light.svg`} alt="Home" />
+        </div>
+
+        <div className='scoreColumn'>
+          <h1 className='scoreDisplay'>
+            {game.gameState === 'FUT' ? "0 - 0" : `${game.home.score} - ${game.away.score}`}
+          </h1>
+        </div>
+
+        <div className='teamCol'>
+          <img className='teamLogo' src={`https://assets.nhle.com/logos/nhl/svg/${game.away.abbrev}_light.svg`} alt="Away" />
+        </div>
+      </div>
+    </div>
+  )
+}
+
 /**
  * Fetches all of the games for the provided date.
  * @param {*} date - the date selected by the user.
@@ -262,40 +315,11 @@ const AllGames = ({ date }) => {
   return (
     <div>
       <div className='container' style={{flexWrap: 'wrap'}}>
-        {games.map((g, i) => {
-          const c = sanitize(g);
-
-          return <div key={g.id} className='gameCard' style={ selectedGame === g.id ? {border: "2px solid #072c7e"} : {}} onClick={() => setSelected(g.id)}>
-                    <div className='headerRow'>
-                      <h2 className='gameHeader'>
-                        {c.gameState === 'FUT' ? (
-                          <>
-                            <span className='highlight'>{c.scheduled} | EST</span>
-                          </>
-                        ) : (
-                          <>
-                            <span className='highlight'>P{c.period}</span>
-                            {c.timeRemaining}
-                          </>
-                        )}
-                      </h2>
-                    </div>
-
-                    <div className='scoreRow'>
-                      <div className='teamSection'>
-                        <img className='logo' src={`https://assets.nhle.com/logos/nhl/svg/${c.home.abbrev}_light.svg`} alt="Home Logo" />
-                        <h2>{c.home.name}</h2>
-                      </div>
-                      <div className='scoreSection'>
-                        <h1 className='scoreText'>{c.home.score} - {c.away.score}</h1>
-                        <p style={{ visibility: 'hidden' }}>hidden</p>
-                      </div>
-                      <div className='teamSection'>
-                        <img className='logo' src={`https://assets.nhle.com/logos/nhl/svg/${c.away.abbrev}_light.svg`} alt="Home Logo" />
-                        <h2>{c.away.name}</h2>
-                      </div>
-                    </div>
-                </div>
+        {games.map((g) => {
+          const cleanedData = sanitize(g);
+          return (
+            <GameCard key={g.id} game={cleanedData} selected={selectedGame === g.id} onSelect={() => setSelected(g.id)} />
+          );
         })}
       </div>
       <ChosenGame game={sanitize(selectedData)} />
@@ -538,7 +562,7 @@ const GameStatistics = ({ game }) => {
 }
 
 function App({ pageId }) {
-  const [date, onChange] = useState(new Date(2026, 2, 31));  // using as a testing date.
+  const [date, onChange] = useState(new Date(2026, 2, 30));  // using as a testing date.
   // const [value, onChange] = useState(new Date());
 
   return (

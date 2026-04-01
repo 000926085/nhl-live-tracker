@@ -19,10 +19,10 @@
 }
 
 .container {
-    display: flex;
-    justify-content: center; 
-    width: 100%;
-    gap: 10px;
+  display: flex;
+  justify-content: center; 
+  width: 100%;
+  gap: 10px;
 }
 
 .flex {
@@ -40,8 +40,8 @@
   border-radius: 25px;
   text-align: center;
   display: inline-block;
-  padding: 6px 22px;
-  margin: 10px 0;
+  padding: 4px 12px;
+  margin: 10px 0 1px 0;
 }
 
 .headerRow {
@@ -100,23 +100,61 @@
 }
 
 .selectedGame {
-    background: linear-gradient(180deg, rgba(48, 90, 146, 1) 0%, rgba(6, 39, 255, 1) 100%);
+  background: linear-gradient(180deg, rgba(48, 90, 146, 1) 0%, rgba(6, 39, 255, 1) 100%);
+  border: 2px solid #FFF;
+  border-radius: 25px;
+  color: white;
+  width: 100%; 
+  max-width: 600px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.gameCard {
+    background: linear-gradient(180deg, rgba(38, 132, 255, 1) 0%, rgba(23, 79, 153, 1) 100%);
     border: 2px solid #FFF;
     border-radius: 25px;
     color: white;
-    width: 100%; 
-    max-width: 600px;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
+    width: 275px;
+    box-sizing: border-box;
+}
+
+.gameCard:active {
+  transform: scale(0.95); 
+}
+
+#ddh-app-root .gameCard {
+  font-size: medium !important;
 }
 
 .scoreRow {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
   width: 100%;
+}
+
+.teamCol {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.teamLogo {
+  width: 100px;
+  height: 100px;
+  filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.5)); 
+  object-fit: contain;
+}
+
+.teamName {    
+  font-weight: bold;
+  margin: 0 0 0 0;         
+  text-transform: uppercase;
 }
 
 .scoreSection {
@@ -148,13 +186,6 @@
   color: white;
   display: flex;
   justify-content: center;
-}
-
-.gameCard {
-    background: linear-gradient(180deg, rgba(38, 132, 255, 1) 0%, rgba(23, 79, 153, 1) 100%);
-    border: 2px solid #FFF;
-    border-radius: 25px;
-    color: white;
 }
 
 .rinkcard {
