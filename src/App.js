@@ -572,7 +572,7 @@ function App({ pageId }) {
 
   return (
     <div style={{ backgroundColor: 'black'}}>
-      <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: '24px'}}>
+      <div className='date-header-container'>
         <h1 className='dashboard' style={{ margin: '0 0 10px 0' }}>{date.toLocaleDateString('en-ZA')} | Games</h1>
         <button className={`btn_on btn`} onClick={() => setShowCalendar(!showCalendar)}>Select Date</button>
       </div>
