@@ -562,13 +562,29 @@ const GameStatistics = ({ game }) => {
 }
 
 function App({ pageId }) {
-  const [date, onChange] = useState(new Date(2026, 2, 30));  // using as a testing date.
-  // const [value, onChange] = useState(new Date());
+  const [date, setDate] = useState(new Date(2026, 2, 31));
+  const [showCalendar, setShowCalendar] = useState(false);
+
+  const dateChange = (newDate) => {
+    setDate(newDate);
+    setShowCalendar(false);
+  };
 
   return (
-    <div style={{backgroundColor: 'black'}}>
-      <Calendar onChange={onChange} value={date} />
-      <h1 className='dashboard'>{date.toLocaleDateString('en-ZA')} | Games</h1>
+    <div style={{ backgroundColor: 'black'}}>
+      <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: '24px'}}>
+        <h1 className='dashboard' style={{ margin: '0 0 10px 0' }}>{date.toLocaleDateString('en-ZA')} | Games</h1>
+        <button className={`btn_on btn`} onClick={() => setShowCalendar(!showCalendar)}>Select Date</button>
+      </div>
+
+      {showCalendar && (
+        <div className='modal' onClick={() => setShowCalendar(false)}>
+          <div className='calendar-modal' onClick={(e) => e.stopPropagation()}>
+            <Calendar onChange={dateChange} value={date} />
+          </div>
+        </div>
+      )}
+
       <AllGames date={date} />
     </div>
   );
