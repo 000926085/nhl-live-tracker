@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import { doc, collection, getDoc, getDocs } from "firebase/firestore";
+import { doc, collection, getDoc, getDocs, onSnapshot } from "firebase/firestore";
 import { database } from './config/firebase';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
@@ -233,47 +233,58 @@ const AllGames = ({ date }) => {
   const [selectedGame, setSelected] = useState(null); 
 
   useEffect(() => {
-    const fetchIds = async () => {
-      try {
-        setGames(null);
-        
-        // Find the document for the provided date.
-        const formattedDate = date.toLocaleDateString('en-ZA').replaceAll("/", "-");
-        const dateRef = doc(database, "Games", formattedDate);
-        const snap = await getDoc(dateRef);
+    // Find the document for the provided date.
+    const formattedDate = date.toLocaleDateString('en-ZA').replaceAll("/", "-");
+    const dateRef = doc(database, "Games", formattedDate);
 
-        // If there is a document for the date, continue.
-        if (snap.exists() && snap.data().games) {
-          const ids = snap.data().games;
+    const unsubscribeDate = onSnapshot(dateRef, (snap) => {
+      // If there is a document for the date, continue.
+      if (snap.exists() && snap.data().games) {
+        const ids = snap.data().games;
 
-          // Fetch every game (collection) for the date.
-          const allGames = await Promise.all(
-            ids.map(async (id) => {
-              const gameRef = collection(database, "Games", formattedDate, String(id));
-              const gameSnap = await getDocs(gameRef);
+        // Keep track of individual game unsubscribes.
+        const gameUnsubs = [];
 
-              // Loop through each subdocument and add the associated data.
-              let gameDetails = { id };
-              gameSnap.forEach(doc => {
-                gameDetails[doc.id] = doc.data();
-              });
+        ids.forEach((id) => {
+          const gameRef = collection(database, "Games", formattedDate, String(id));
 
-              return gameDetails;
-            })
-          );
-          setGames(allGames);
-          setSelected(allGames[0].id);
-        } 
-        // If not, no games must exist for that date.
-        else {
-          setGames([]);
-        }
-      } catch (err) {
-        console.error("Fetching failure: ", err);
+          // Listen to each individual game.
+          const unsubGame = onSnapshot(gameRef, (gameSnap) => {
+            let gameDetails = { id };
+            gameSnap.forEach(doc => {
+              gameDetails[doc.id] = doc.data();
+            });
+
+            // Update said game in state.
+            setGames((prevGames) => {
+              if (!prevGames) return [gameDetails];
+              const i = prevGames.findIndex(g => g.id === id);
+              if (i > -1) {
+                const newGames = [...prevGames];
+                newGames[i] = gameDetails;
+                return newGames;
+              }
+              return [...prevGames, gameDetails];
+            });
+
+            setSelected(prev => prev ?? id);
+          });
+
+          gameUnsubs.push(unsubGame);
+        })
+
+        // Cleanup for listeners.
+        return () => gameUnsubs.forEach(unsub => unsub());
+      } 
+      
+      // If not, no games must exist for that date.
+      else {
+        setGames([]);
       }
-    };
+    }, (err) => console.error("Fetch failed: ", err));
 
-    fetchIds();
+    // Cleanup main listener for when the date changes.
+    return () => unsubscribeDate();
   }, [date]);
 
   if (!games) { return <p className='centered'>Loading!</p> }

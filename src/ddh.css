@@ -96,12 +96,12 @@
 }
 
 .gameCard {
-    background: linear-gradient(180deg, rgba(38, 132, 255, 1) 0%, rgba(23, 79, 153, 1) 100%);
-    border: 2px solid #FFF;
-    border-radius: 25px;
-    color: white;
-    width: 275px;
-    box-sizing: border-box;
+  background: linear-gradient(180deg, rgba(38, 132, 255, 1) 0%, rgba(23, 79, 153, 1) 100%);
+  border: 2px solid #FFF;
+  border-radius: 25px;
+  color: white;
+  width: 275px;
+  box-sizing: border-box;
 }
 
 .gameCard:active {
@@ -230,27 +230,27 @@
 }
 
 .modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-color: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(4px); 
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px); 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
 }
 
 .date-header-container {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    gap: 24px;
-    width: 100%;
-    margin-bottom: 20px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  width: 100%;
+  margin-bottom: 20px;
 }
 
 /* --- WordPress Overrides Begin Here! --- */
@@ -262,8 +262,8 @@
 }
 
 #ddh-app-root {
-    color: white !important;
-    font-family: Arial, sans-serif !important;
+  color: white !important;
+  font-family: Arial, sans-serif !important;
 }
 
 #ddh-app-root .selectedGame h1 {
@@ -281,86 +281,90 @@
 }
 
 #ddh-app-root .scoreR {
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 8px !important;
-    width: 100% !important;
-    padding: 5px 0 10px 0 !important;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  width: 100% !important;
+  padding: 5px 0 10px 0 !important;
 }
 
 #ddh-app-root .teamC {
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    flex: 0 0 auto !important; 
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  flex: 0 0 auto !important; 
 }
 
 #ddh-app-root .scoreDisplay {
-    margin: 0 !important;
-    line-height: 1 !important;
-    white-space: nowrap !important;
-    font-size: 2.0rem;
-    font-weight: 700;
+  margin: 0 !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+  font-size: 2.0rem;
+  font-weight: 700;
 }
 
 #ddh-app-root .teamLogo {
-    width: 95px !important; 
-    height: 95px !important;
-    display: block !important;
-    object-fit: contain !important;
-    margin: 0 !important;
+  width: 95px !important; 
+  height: 95px !important;
+  display: block !important;
+  object-fit: contain !important;
+  margin: 0 !important;
+  -webkit-touch-callout: none;
+  -webkit-user-select: auto;
+  pointer-events: none;
+  user-select: none;
 }
 
 #ddh-app-root .headerR {
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    width: 100% !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    height: auto !important;
-    min-height: unset !important;
-    line-height: 0 !important; 
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  height: auto !important;
+  min-height: unset !important;
+  line-height: 0 !important; 
 }
 
 #ddh-app-root .gameHeader {
-    background-color: rgba(0, 0, 0, 0.5) !important;
-    border-radius: 25px !important;
-    padding: 6px 16px !important;
-    margin-top: 8px !important; 
-    margin-bottom: 2px !important;
-    font-size: 1.3rem !important;
-    font-weight: 700 !important;
-    line-height: 1.2 !important; 
-    display: inline-block !important;
-    color: white !important;
-    text-align: center !important;
+  background-color: rgba(0, 0, 0, 0.5) !important;
+  border-radius: 25px !important;
+  padding: 6px 16px !important;
+  margin-top: 8px !important; 
+  margin-bottom: 2px !important;
+  font-size: 1.3rem !important;
+  font-weight: 700 !important;
+  line-height: 1.2 !important; 
+  display: inline-block !important;
+  color: white !important;
+  text-align: center !important;
 }
 
 #ddh-app-root .date-header-container {
-    display: flex !important;
-    flex-wrap: wrap !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 16px !important;
-    width: 100% !important;
-    margin-bottom: 20px !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 16px !important;
+  width: 100% !important;
+  margin-bottom: 20px !important;
 }
 
 #ddh-app-root .dashboard {
-    margin: 0 !important; 
-    padding: 0 !important;
-    line-height: 1 !important; 
-    display: flex !important;
-    align-items: center !important;
+  margin: 0 !important; 
+  padding: 0 !important;
+  line-height: 1 !important; 
+  display: flex !important;
+  align-items: center !important;
 }
 
 #ddh-app-root .btn_on.btn {
-    margin: 0 !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
+  margin: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
