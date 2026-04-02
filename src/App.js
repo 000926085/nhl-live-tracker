@@ -233,6 +233,8 @@ const AllGames = ({ date }) => {
   const [selectedGame, setSelected] = useState(null); 
 
   useEffect(() => {
+    setGames(null);
+    
     // Find the document for the provided date.
     const formattedDate = date.toLocaleDateString('en-ZA').replaceAll("/", "-");
     const dateRef = doc(database, "Games", formattedDate);
