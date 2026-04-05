@@ -189,6 +189,7 @@
   background: linear-gradient(180deg, rgba(48, 90, 146, 1) 0%, rgba(6, 39, 255, 1) 100%);
   border: 2px solid #FFF;
   border-radius: 25px;  
+  margin-top: 10px;
 }
 
 .game-statistics-header {
@@ -208,7 +209,7 @@
 }
 
 .stat-label {
-  font-size: clamp(0.7rem, 2vw, 0.9rem);
+  font-size: clamp(0.8rem, 2vw, 0.9rem);
   width: 150px;
   text-align: center;
   margin: 0 20px;
@@ -383,6 +384,11 @@
   white-space: nowrap !important;
   font-size: 2.0rem;
   font-weight: 700;
+}
+
+#ddh-app-root .teamDisplay {
+  font-size: 1.8rem;
+  font-weight: 500;
 }
 
 #ddh-app-root .teamLogo {

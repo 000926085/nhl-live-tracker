@@ -192,16 +192,40 @@ const StrengthToggle = ({active, onChange}) => {
   const btns = ['ALL', 'EV', 'ALL w/o EN'];
 
   return (
-    <div className='flex'>
-      <h1 className='title'>Strength State:</h1>
+    <div style={{
+      display: 'flex',
+      flexDirection: 'row',     // Start as a row
+      flexWrap: 'wrap',        // Allow wrapping to a second line
+      alignItems: 'center',
+      justifyContent: 'center', // Keep everything centered when it wraps
+      gap: '12px',             // Perfectly uniform space (vertical AND horizontal)
+      padding: '10px 0',
+      width: '100%'
+    }}>
+      <h1 className='title' style={{ 
+        margin: 0,             // Remove default margins that cause uneven spacing
+        fontSize: '1.6rem',
+      }}>
+        Strength State
+      </h1>
 
-      {btns.map((b) => {
-        return (
-          <button key={b} className={`item ${b === active ? 'btn_on' : 'btn_off'} btn`} onClick={() => onChange(b)}>
+      {/* Button Group */}
+      <div style={{ 
+        display: 'flex', 
+        gap: '8px',            // Spacing specifically between the buttons
+        flexWrap: 'wrap',
+        justifyContent: 'center' 
+      }}>
+        {btns.map((b) => (
+          <button 
+            key={b} 
+            className={`item ${b === active ? 'btn_on' : 'btn_off'} btn`} 
+            onClick={() => onChange(b)}
+          >
             {b}
           </button>
-        );
-      })}
+        ))}
+      </div>
     </div>
   );
 }
@@ -326,7 +350,7 @@ const AllGames = ({ date }) => {
   }, [date]);
 
   if (!games) { return <p className='centered'>Loading!</p> }
-  else if (games.length === 0) { return <p className='centered'>No games for this date!</p> }
+  else if (games.length === 0) { return <h3 className='centered'>No games for this date were found.</h3> }
 
   // Clean the data to account for missing fields.
   const sanitize = (game) => {
@@ -445,7 +469,7 @@ const ChosenGame = ({ game }) => {
         <div className='scoreR'>
           <div className='teamC'>
             <img className='teamLogo' style={{height: '150px', width: '150px'}} src={`https://assets.nhle.com/logos/nhl/svg/${game.home.abbrev}_light.svg`} alt="Home Logo" />
-            <h2>{game.home.name}</h2>
+            <h2 className='teamDisplay'>{game.home.name}</h2>
           </div>
           
           <div>
@@ -454,7 +478,7 @@ const ChosenGame = ({ game }) => {
 
           <div className='teamC'>
             <img className='teamLogo' style={{height: '150px', width: '150px'}} src={`https://assets.nhle.com/logos/nhl/svg/${game.away.abbrev}_light.svg`} alt="Away Logo"/>
-            <h2>{game.away.name}</h2>
+            <h2 className='teamDisplay'>{game.away.name}</h2>
           </div>
         </div>
       </div>
@@ -641,6 +665,20 @@ const GameStatistics = ({ game, strength }) => {
             </div>
           )}
 
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 1fr', alignItems: 'center', width: '100%'}}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '10px' }}>
+              <img className='teamLogo' src={`https://assets.nhle.com/logos/nhl/svg/${game.home.abbrev}_light.svg`} alt="Team Logo" />
+              <span style={{ fontWeight: 'bold', fontSize: '1.6rem', textAlign: 'right' }}>{game.home.abbrev}</span>
+            </div>
+
+            <div style={{ textAlign: 'center', fontSize: '1.6rem', fontWeight: 'bold'}}>VS.</div>
+
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '10px' }}>
+              <span style={{ fontWeight: 'bold', fontSize: '1.6rem', textAlign: 'left' }}>{game.away.abbrev}</span>
+              <img className='teamLogo' src={`https://assets.nhle.com/logos/nhl/svg/${game.away.abbrev}_light.svg`} alt="Team Logo" />
+            </div>
+          </div>
+
           {stats.map((stat) => {
             const homeVal = statsLookup[stat.key].home;
             const awayVal = statsLookup[stat.key].away;
@@ -690,7 +728,7 @@ function App({ pageId }) {
   return (
     <div style={{ backgroundColor: 'black'}}>
       <div className='date-header-container'>
-        <h1 className='dashboard' style={{ margin: '0 0 10px 0' }}>{date.toLocaleDateString('en-ZA')} | Games</h1>
+        <h1 className='dashboard' style={{ margin: '0 0 10px 0' }}>{date.toLocaleDateString('en-ZA')}</h1>
         <button className={`btn_on btn`} onClick={() => setShowCalendar(!showCalendar)}>Select Date</button>
       </div>
 
