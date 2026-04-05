@@ -14,6 +14,18 @@ import { TEAM_COLORS } from './constants/colours.js';
  */
 const SVGRink = ( {arr, gameid, home, away, strength} ) => {
   const [selectedShot, setSelectedShot] = useState(null);
+  const [infoPos, setInfoPos] = useState({ x: 0, y: 0 });
+
+  const handleClick = (e, shot) => {
+    const rect = e.currentTarget.closest('svg').getBoundingClientRect();
+    
+    // Calculate position as a percentage (0 to 100)
+    const xPercent = ((e.clientX - rect.left) / rect.width) * 100;
+    const yPercent = ((e.clientY - rect.top) / rect.height) * 100;
+
+    setInfoPos({ x: xPercent, y: yPercent });
+    setSelectedShot(shot);
+  };
 
   useEffect(() => {
     setSelectedShot(null);
@@ -25,9 +37,9 @@ const SVGRink = ( {arr, gameid, home, away, strength} ) => {
   const awayLogoUrl = `https://assets.nhle.com/logos/nhl/svg/${away.abbrev}_light.svg`;
 
   return (
-    <div style={{width: "95%"}}>
-      {selectedShot && (
-       <p>{JSON.stringify(selectedShot, null, 2)}</p>
+    <div style={{width: "95%", position: "relative"}}>
+     {selectedShot && (
+        <ShotDetails shot={selectedShot} pos={infoPos} onClose={() => setSelectedShot(null)} />
       )}
       
       <svg viewBox="-1 -1 202 87">
@@ -91,10 +103,10 @@ const SVGRink = ( {arr, gameid, home, away, strength} ) => {
 
             return (
               <Shot 
-                key={`${gameid}-${id}`} 
+                key={`${gameid}-${id}-${s.typeDescKey}`} 
                 shot={{ ...s, coords: { ...s.coords, xCoord: displayCoords.x, yCoord: displayCoords.y } }}
                 selected={selectedShot?.id === s.id} 
-                onClick={() => setSelectedShot(s)} 
+                onClick={(e) => handleClick(e, s)} 
               />
             );
           })}
@@ -125,7 +137,7 @@ const Shot = ( {shot, selected, onClick} ) => {
     stroke: selected ? 'rgba(235, 235, 235, 0.76)' : (TEAM_COLORS[shot.eventOwnerTeam]?.primary ?? "#FFD700"),
     strokeWidth: 0.2,
     style: { cursor: "pointer" },
-    onClick: onClick
+    onClick: (e) => onClick(e)
   }
 
   switch(shot.typeDescKey) {
@@ -151,6 +163,25 @@ const Shot = ( {shot, selected, onClick} ) => {
         <polygon {...common} points={`${x},${y - dy} ${x + dx},${y} ${x},${y + dy} ${x - dx},${y}`} />
       )
   }
+}
+
+const ShotDetails = ({ shot, pos, onClose }) => {
+  const shotType = shot.typeDescKey.replace("-", " ").split(" ")[0];
+
+  return (
+    <div className="shot-details" style={{ left: `${pos.x}%`, top: `${pos.y}%`}}>
+      {/* Team Logo Container */}
+      <div>
+        <img className='teamLogo' src={`https://assets.nhle.com/logos/nhl/svg/${shot.eventOwnerTeam}_light.svg`} alt="Team Logo" />
+      </div>
+
+      <div style={{ color: 'white' }}>
+        <p style={{fontWeight: 'bold'}}>{shot.eventOwnerTeam} {shotType}</p>
+        <p>{shot.player.shootingPlayer}</p>
+        <p>P{shot.period.number}, {shot.period.timeRemaining}</p>
+      </div>
+    </div>
+  )
 }
 
 /**
@@ -351,6 +382,8 @@ const AllGames = ({ date }) => {
     }
   };
 
+  console.log(displayData);
+
   return (
     <div>
       <div className='container' style={{flexWrap: 'wrap'}}>
@@ -520,7 +553,7 @@ const GameStatistics = ({ game, strength }) => {
       ...game.home.players,
       ...game.away.players
     ].map(p => ({
-      label: p.player, 
+      label: `${p.player} [${p.sweaterNumber}]`,
       value: p.player 
     }))
   }
@@ -564,11 +597,31 @@ const GameStatistics = ({ game, strength }) => {
     return typeMatch && periodMatch && positionMatch && playerMatch;
   });
 
+  const stats = [
+    { label: 'Goals', key: 'goal' },
+    { label: 'Shots-On-Goal', key: 'shot-on-goal' },
+    { label: 'Blocked Shots', key: 'blocked-shot' },
+    { label: 'Missed Shots', key: 'missed-shot' },
+  ];
+
+  const statsLookup = stats.reduce((acc, stat) => {
+    acc[stat.key] = {
+      home: getCount(game.home.abbrev, stat.key),
+      away: getCount(game.away.abbrev, stat.key)
+    };
+    return acc;
+  }, {});
+
   return (
     <div style={{color: 'white'}}>
       {/* Rink and Toggles */}
       <div className='rinkcard'>
         <h2 className='gameHeader'>Shotmap | <i>Last Updated: {game.lastUpdated}</i></h2>
+        {strength !== 'ALL' && (
+            <div>
+              <i>Data reflects plays made under the <b>{strength.toUpperCase()}</b> strength state.</i>
+            </div>
+          )}
         <div className='filter-row'>
           {Object.entries(dropdownOptions).map(([category, options]) => (
             <ToggleMenu key={category} category={category} options={options} selected={filters[category]} onToggle={(v) => toggleFilter(category, v)} />
@@ -577,38 +630,50 @@ const GameStatistics = ({ game, strength }) => {
         <SVGRink key={game.id} arr={filteredShots} gameid={game.id} home={game.home} away={game.away} strength={strength} />
       </div>
 
-      <h2 className='dashboard'>Game Statistics | {game.lastUpdated}</h2>
-      <table style={{border: '1px solid white', textAlign: 'center'}}>
-        <thead>
-          <tr>
-            <th>{game.home.abbrev}</th>
-            <th></th>
-            <th>{game.away.abbrev}</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><img className='logo' src={`https://assets.nhle.com/logos/nhl/svg/${game.home.abbrev}_light.svg`} alt="Home Logo"/></td>
-            <td>{getCount(game.home.abbrev, 'goal')} - {getCount(game.away.abbrev, 'goal')}</td>
-            <td><img className='logo' src={`https://assets.nhle.com/logos/nhl/svg/${game.away.abbrev}_light.svg`} alt="Away Logo" /></td>
-          </tr>
-          <tr>
-            <td>{getCount(game.home.abbrev, 'shot-on-goal')}</td>
-            <td>Shots-On-Goal</td>
-            <td>{getCount(game.away.abbrev, 'shot-on-goal')}</td>
-          </tr>
-          <tr>
-            <td>{getCount(game.home.abbrev, 'blocked-shot')}</td>
-            <td>Blocked Shots</td>
-            <td>{getCount(game.away.abbrev, 'blocked-shot')}</td>
-          </tr>
-          <tr>
-            <td>{getCount(game.home.abbrev, 'missed-shot')}</td>
-            <td>Missed Shots</td>
-            <td>{getCount(game.away.abbrev, 'missed-shot')}</td>
-          </tr>
-        </tbody>
-      </table>
+      {/* Statistics Table */}
+      <div className='game-statistics'>
+          <div className='game-statistics-header'>
+            <h2 className='gameHeader'>Game Statistics | <i>Last Updated: {game.lastUpdated}</i></h2>
+          </div>
+          {strength !== 'ALL' && (
+            <div>
+              <i>Data reflects plays made under the <b>{strength.toUpperCase()}</b> strength state.</i>
+            </div>
+          )}
+
+          {stats.map((stat) => {
+            const homeVal = statsLookup[stat.key].home;
+            const awayVal = statsLookup[stat.key].away;
+
+            const homeStyles = {
+              backgroundColor: homeVal > awayVal ? TEAM_COLORS[game.home.abbrev].primary : '#222',
+              backgroundImage: homeVal > awayVal 
+                ? 'linear-gradient(to bottom, rgba(255,255,255,0.2), rgba(255,255,255,0))' 
+                : 'none',
+              color: ['BOS', 'NSH'].includes(game.home.abbrev) ? '#000' : '#FFF'
+            };
+
+            const awayStyles = {
+              backgroundColor: awayVal > homeVal ? TEAM_COLORS[game.away.abbrev].primary : '#222',
+              backgroundImage: awayVal > homeVal 
+                ? 'linear-gradient(to bottom, rgba(255,255,255,0.2), rgba(255,255,255,0))' 
+                : 'none',
+              color: ['BOS', 'NSH'].includes(game.away.abbrev) ? '#000' : '#FFF'
+            };
+
+            return (
+              <div key={stat.key} style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center',  margin: '5px 0' }}>
+                <div className='stats-card' style={homeStyles}>
+                  <p>{homeVal}</p>
+                </div>
+                <p className='stat-label'>{stat.label}</p>
+                <div className='stats-card' style={awayStyles}>
+                  <p>{awayVal}</p>
+                </div>
+              </div>
+            );
+          })}
+      </div>
     </div>
   )
 }
