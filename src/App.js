@@ -12,8 +12,13 @@ import { TEAM_COLORS } from './constants/colours.js';
  * @param {*} arr array containing the shots for the selected game. 
  * @returns a div holding the SVG representation of a hockey rink.
  */
-const SVGRink = ( {arr, gameid, home, away} ) => {
+const SVGRink = ( {arr, gameid, home, away, strength} ) => {
   const [selectedShot, setSelectedShot] = useState(null);
+
+  useEffect(() => {
+    setSelectedShot(null);
+  }, [strength]);
+
   if (!arr) { return <div>Loading!</div> }
   
   const homeLogoUrl = `https://assets.nhle.com/logos/nhl/svg/${home.abbrev}_light.svg`;
@@ -152,8 +157,7 @@ const Shot = ( {shot, selected, onClick} ) => {
  * Constructs a row of buttons to toggle the strength state of the shot map and game statistics.
  * @returns - div containing the buttons
  */
-function StrengthToggle() {
-  const [active, setActive] = useState('ALL');
+const StrengthToggle = ({active, onChange}) => {
   const btns = ['ALL', 'EV', 'ALL w/o EN'];
 
   return (
@@ -162,7 +166,7 @@ function StrengthToggle() {
 
       {btns.map((b) => {
         return (
-          <button key={b} className={`item ${b === active ? 'btn_on' : 'btn_off'} btn`} onClick={() => setActive(b)}>
+          <button key={b} className={`item ${b === active ? 'btn_on' : 'btn_off'} btn`} onClick={() => onChange(b)}>
             {b}
           </button>
         );
@@ -231,6 +235,7 @@ const GameCard = ({ game, selected, onSelect }) => {
 const AllGames = ({ date }) => {
   const [games, setGames] = useState(null);
   const [selectedGame, setSelected] = useState(null); 
+  const [strength, setStrength] = useState('ALL');
 
   useEffect(() => {
     setGames(null);
@@ -324,6 +329,27 @@ const AllGames = ({ date }) => {
   
   // Get the data for the selected game using the ID.
   const selectedData = games.find(g => g.id === selectedGame) ?? games[0];
+  const fullCleanedData = sanitize(selectedData);
+
+  // Handle filtering the data according to strength state.
+  const shotsToFilter = fullCleanedData.shots?.shots || [];
+  const filteredShotsArray = shotsToFilter.filter(s => {
+    if (strength === 'ALL') return true;
+    if (strength === 'EV') return s.strengthState === 'EVEN';
+    if (strength === 'ALL w/o EN') {
+      return s.strengthState !== 'AWAY EN' && s.strengthState !== 'HOME EN';
+    }
+    return true;
+  });
+
+  // Replace the shots of the sanitized data with the filtered shots.
+  const displayData = {
+    ...fullCleanedData,
+    shots: {
+      ...fullCleanedData.shots,
+      shots: filteredShotsArray
+    }
+  };
 
   return (
     <div>
@@ -335,9 +361,9 @@ const AllGames = ({ date }) => {
           );
         })}
       </div>
-      <ChosenGame game={sanitize(selectedData)} />
-      <StrengthToggle />
-      <GameStatistics game={sanitize(selectedData)} />
+      <ChosenGame game={displayData} />
+      <StrengthToggle active={strength} onChange={setStrength} />
+      <GameStatistics game={displayData} strength={strength} />
     </div>
   )
 }
@@ -348,6 +374,29 @@ const AllGames = ({ date }) => {
  * @returns div containing data of the selected game.
  */
 const ChosenGame = ({ game }) => {
+// Determine how to fill the header text.
+  const gameStatus = (c) => {
+    switch (c.gameState) {
+      case 'FUT':
+        return (
+          <span className='highlight'>{c.scheduled} | EST</span>
+        );
+
+      case 'LIVE':
+        return (
+          <><span className='highlight'>P{c.period}</span>{c.timeRemaining}</>
+        );
+
+      case 'OFF':
+        return (
+          <span>FINAL</span>
+        );
+
+      default:
+        return <span></span>;
+    }
+  };
+
   return (
     <div className='selectedContainer'>
       <div className='selectedGame'>
@@ -355,33 +404,23 @@ const ChosenGame = ({ game }) => {
         {/* Period/Time Remaining */}
         <div className='headerR'>
             <h2 className='gameHeader'>
-              {game.gameState === 'FUT' ? (
-                <>
-                  <span className='highlight'>{game.scheduled} | EST</span>
-                </>
-              ) : (
-                <>
-                  <span className='highlight'>P{game.period}</span>
-                  {game.timeRemaining}
-                </>
-              )}
+              {gameStatus(game)}
             </h2>
         </div>
 
         {/* Teams and Score */}
         <div className='scoreR'>
-          <div className='teamSection'>
-            <img className='logo' src={`https://assets.nhle.com/logos/nhl/svg/${game.home.abbrev}_light.svg`} alt="Home Logo" />
+          <div className='teamC'>
+            <img className='teamLogo' style={{height: '150px', width: '150px'}} src={`https://assets.nhle.com/logos/nhl/svg/${game.home.abbrev}_light.svg`} alt="Home Logo" />
             <h2>{game.home.name}</h2>
           </div>
           
-          <div className='scoreSection'>
-            <h1 className='scoreText'>{game.home.score} - {game.away.score}</h1>
-            <p style={{ visibility: 'hidden' }}>hidden</p>
+          <div>
+            <h1 className='scoreDisplay'>{game.home.score} - {game.away.score}</h1>
           </div>
 
-          <div className='teamSection'>
-            <img className='logo' src={`https://assets.nhle.com/logos/nhl/svg/${game.away.abbrev}_light.svg`} alt="Away Logo"/>
+          <div className='teamC'>
+            <img className='teamLogo' style={{height: '150px', width: '150px'}} src={`https://assets.nhle.com/logos/nhl/svg/${game.away.abbrev}_light.svg`} alt="Away Logo"/>
             <h2>{game.away.name}</h2>
           </div>
         </div>
@@ -410,11 +449,11 @@ const ToggleMenu = ({ category, options, selected, onToggle}) => {
       </div>
 
       {active && (
-        <div>
+        <div className='filter-options'>
           {options.map(o => (
             <div key={o.value} onClick={() => onToggle(o.value)}>
               <input type="checkbox" checked={selected.includes(o.value)} readOnly/>
-              {o.label}
+              <span style={{marginLeft: '5px'}}>{o.label}</span>
             </div>
           ))}
         </div>
@@ -428,7 +467,7 @@ const ToggleMenu = ({ category, options, selected, onToggle}) => {
  * @param {object} game represents a game, along with its data and shot data.
  * @returns table containing a tally of the shots, sorted by type, for each team.
  */
-const GameStatistics = ({ game }) => {
+const GameStatistics = ({ game, strength }) => {
   // Stores the currently selected filters.
   const [filters, setFilters] = useState({
     shotType: ['goal', 'shot-on-goal', 'missed-shot', 'blocked-shot'],
@@ -521,8 +560,8 @@ const GameStatistics = ({ game }) => {
     const typeMatch = filters.shotType.includes(s.typeDescKey);
     const periodMatch = filters.period.includes(s.period.number);
     const positionMatch = filters.position.includes(s.player?.position);
-    // const playerMatch = filters.players.includes(s.player?.shootingPlayer);
-    return typeMatch && periodMatch && positionMatch // && playerMatch;
+    const playerMatch = filters.players.includes(s.player?.shootingPlayer);
+    return typeMatch && periodMatch && positionMatch && playerMatch;
   });
 
   return (
@@ -535,7 +574,7 @@ const GameStatistics = ({ game }) => {
             <ToggleMenu key={category} category={category} options={options} selected={filters[category]} onToggle={(v) => toggleFilter(category, v)} />
           ))}
         </div>    
-        <SVGRink key={game.id} arr={filteredShots} gameid={game.id} home={game.home} away={game.away} />
+        <SVGRink key={game.id} arr={filteredShots} gameid={game.id} home={game.home} away={game.away} strength={strength} />
       </div>
 
       <h2 className='dashboard'>Game Statistics | {game.lastUpdated}</h2>
