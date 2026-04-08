@@ -5,185 +5,8 @@ import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import './index.css';
 import './ddh.css';
-import { TEAM_COLORS } from './constants/colours.js';
-
-/**
- * 
- * @param {*} arr array containing the shots for the selected game. 
- * @returns a div holding the SVG representation of a hockey rink.
- */
-const SVGRink = ( {arr, gameid, home, away, strength} ) => {
-  const [selectedShot, setSelectedShot] = useState(null);
-  const [infoPos, setInfoPos] = useState({ x: 0, y: 0 });
-
-  const handleClick = (e, shot) => {
-    const rect = e.currentTarget.closest('svg').getBoundingClientRect();
-    
-    // Calculate position as a percentage (0 to 100)
-    const xPercent = ((e.clientX - rect.left) / rect.width) * 100;
-    const yPercent = ((e.clientY - rect.top) / rect.height) * 100;
-
-    setInfoPos({ x: xPercent, y: yPercent });
-    setSelectedShot(shot);
-  };
-
-  useEffect(() => {
-    setSelectedShot(null);
-  }, [strength]);
-
-  if (!arr) { return <div>Loading!</div> }
-  
-  const homeLogoUrl = `https://assets.nhle.com/logos/nhl/svg/${home.abbrev}_light.svg`;
-  const awayLogoUrl = `https://assets.nhle.com/logos/nhl/svg/${away.abbrev}_light.svg`;
-
-  return (
-    <div style={{width: "95%", position: "relative"}}>
-     {selectedShot && (
-        <ShotDetails shot={selectedShot} pos={infoPos} onClose={() => setSelectedShot(null)} />
-      )}
-      
-      <svg viewBox="-1 -1 202 87">
-        <defs>
-          <clipPath id="rinkClip">
-            <rect x="-2" y="-2" width="204" height="89" rx="15" ry="15" />
-          </clipPath>
-        </defs>
-
-        {/* Rink Boundary */}
-        <rect x="0" y="0" width="200" height="85" rx="15" ry="15" fill="#f0f0f0" stroke="black" strokeWidth="0.33" />
-
-        {/* Centre */}
-        <line x1="100" y1="0" x2="100" y2="85" stroke="rgb(200, 16, 46)" strokeWidth="0.33" strokeDasharray="1, 1" />
-        <circle cx="100" cy="42.5" r="12.5" fill="none" stroke="rgb(0, 102, 204)" strokeWidth="0.33" />
-        <circle cx="100" cy="42.5" r="0.5" stroke="rgb(0, 102, 204)" />
-
-        {/* Blue Lines */}
-        <line x1="75" y1="0" x2="75" y2="85" stroke="rgb(0, 102, 204)" strokeWidth="0.66" />
-        <line x1="125" y1="0" x2="125" y2="85" stroke="rgb(0, 102, 204)" strokeWidth="0.66" />
-
-        {/* Red Lines */}
-        <line x1="11" y1="0.5" x2="11" y2="84.5" stroke="rgb(200, 16, 46)" strokeWidth="0.33" />
-        <line x1="189" y1="0.5" x2="189" y2="84.5" stroke="rgb(200, 16, 46)" strokeWidth="0.33" />
-
-        {/* Neutral Zone Faceoff Dots */}
-        <circle cx="82.5" cy="21.25" r="0.5" stroke="rgb(200, 16, 46)" />
-        <circle cx="82.5" cy="63.75" r="0.5" stroke="rgb(200, 16, 46)" />
-        <circle cx="117.5" cy="21.25" r="0.5" stroke="rgb(200, 16, 46)" />
-        <circle cx="117.5" cy="63.75" r="0.5" stroke="rgb(200, 16, 46)" />
-
-        {/* Team Logos */}
-        <image href={homeLogoUrl} x="27" y="26.5" width="32" height="32" opacity="0.33" />
-        <image href={awayLogoUrl} x="141" y="26.5" width="32" height="32" opacity="0.33" />
-
-        {/* End Zone Faceoff Circles */}
-        <circle cx="35" cy="21.25" r="12.5" fill="none" stroke="rgb(200, 16, 46)" strokeWidth="0.33" />
-        <circle cx="35" cy="21.25" r="0.5" stroke="rgb(200, 16, 46)" />
-        <circle cx="35" cy="63.75" r="12.5" fill="none" stroke="rgb(200, 16, 46)" strokeWidth="0.33" />
-        <circle cx="35" cy="63.75" r="0.5" stroke="rgb(200, 16, 46)" />
-        <circle cx="165" cy="21.25" r="12.5" fill="none" stroke="rgb(200, 16, 46)" strokeWidth="0.33" />
-        <circle cx="165" cy="21.25" r="0.5" stroke="rgb(200, 16, 46)" />
-        <circle cx="165" cy="63.75" r="12.5" fill="none" stroke="rgb(200, 16, 46)" strokeWidth="0.33" />
-        <circle cx="165" cy="63.75" r="0.5" stroke="rgb(200, 16, 46)" />
-
-        {/* Referee and Goal Creases */}
-        <path d="M 90 0 A 10 10 0 0 0 110 0" fill="none" stroke="rgb(200, 16, 46)" strokeWidth="0.33" />
-        <path d="M 90 85 A 10 10 0 0 1 110 85" fill="none" stroke="rgb(200, 16, 46)" strokeWidth="0.33" />
-        <path d="M 11 36.5 A 6 6 0 0 1 11 48.5" fill="rgba(0, 150, 255, 0.2)" stroke="rgb(200, 16, 46)" strokeWidth="0.33" />
-        <path d="M 189 36.5 A 6 6 0 0 0 189 48.5" fill="rgba(0, 150, 255, 0.2)" stroke="rgb(200, 16, 46)" strokeWidth="0.33" />
-
-        {/* Shot Mapping */}
-        <g clipPath="url(#rinkClip)">
-          {Array.from(new Set(arr.map(s => s.id))).map(id => {
-            const s = arr.find(shot => shot.id === id);
-    
-            // Handle mirroring the shots during the second period.
-            const displayCoords = s.period.number === 2 
-              ? { x: s.coords.xCoord * -1, y: s.coords.yCoord * -1 }
-              : { x: s.coords.xCoord, y: s.coords.yCoord };
-
-            return (
-              <Shot 
-                key={`${gameid}-${id}-${s.typeDescKey}`} 
-                shot={{ ...s, coords: { ...s.coords, xCoord: displayCoords.x, yCoord: displayCoords.y } }}
-                selected={selectedShot?.id === s.id} 
-                onClick={(e) => handleClick(e, s)} 
-              />
-            );
-          })}
-        </g>
-
-        {/* Cover for any clipping lines */}
-        <rect x="0" y="0" width="200" height="85" rx="15" fill="none" stroke="black" strokeWidth="0.33" />
-      </svg>
-    </div>
-  )
-}
-
-/**
- * 
- * @param {Object} shot contains the data pertaining to a shot
- * @param {boolean} selected true if the id of the selected shot matches this shot 
- * @param {Function} onClick callback function triggered when this shot is clicked
- * @returns {JSX.Element} represents a shot made during this game
- */
-const Shot = ( {shot, selected, onClick} ) => {
-  const pad = 2.5; 
-  const x = Math.max(pad, Math.min(200 - pad, shot.coords.xCoord + 100));
-  const y = Math.max(pad, Math.min(85 - pad, 42.5 - shot.coords.yCoord));
-
-  const common = {
-    key: shot.id,
-    fill: TEAM_COLORS[shot.eventOwnerTeam]?.primary ?? "#FFD700",
-    fillOpacity: selected ? 1 : 0.75,
-    stroke: selected ? 'rgba(235, 235, 235, 0.76)' : (TEAM_COLORS[shot.eventOwnerTeam]?.primary ?? "#FFD700"),
-    strokeWidth: 0.2,
-    style: { cursor: "pointer" },
-    onClick: (e) => onClick(e)
-  }
-
-  switch(shot.typeDescKey) {
-    case 'shot-on-goal':
-      return (
-        <circle {...common} cx={x} cy={y} r="1.5" />
-      )
-
-    case 'goal':
-      return (
-        <polygon {...common} points={`${x},${y - 2.1} ${x - 1.8},${y + 1.0} ${x + 1.8},${y + 1.0}`} />
-      )
-
-    case 'missed-shot':
-      const s = 5.5 / 2
-      return (
-        <rect {...common} x={x - s/2} y={y - s/2} height={s} width={s} rx="0.5" />
-      )
-
-    default:
-      const [dx, dy] = [2.0, 2.0];
-      return (
-        <polygon {...common} points={`${x},${y - dy} ${x + dx},${y} ${x},${y + dy} ${x - dx},${y}`} />
-      )
-  }
-}
-
-const ShotDetails = ({ shot, pos, onClose }) => {
-  const shotType = shot.typeDescKey.replace("-", " ").split(" ")[0];
-
-  return (
-    <div className="shot-details" style={{ left: `${pos.x}%`, top: `${pos.y}%`}}>
-      {/* Team Logo Container */}
-      <div>
-        <img className='teamLogo' src={`https://assets.nhle.com/logos/nhl/svg/${shot.eventOwnerTeam}_light.svg`} alt="Team Logo" />
-      </div>
-
-      <div style={{ color: 'white' }}>
-        <p style={{fontWeight: 'bold'}}>{shot.eventOwnerTeam} {shotType}</p>
-        <p>{shot.player.shootingPlayer}</p>
-        <p>P{shot.period.number}, {shot.period.timeRemaining}</p>
-      </div>
-    </div>
-  )
-}
+import { TEAM_COLOURS } from './constants/colours.js';
+import SVGRink from './components/SVGRink';
 
 /**
  * Constructs a row of buttons to toggle the strength state of the shot map and game statistics.
@@ -218,17 +41,35 @@ const GameCard = ({ game, selected, onSelect }) => {
     switch (c.gameState) {
       case 'FUT':
         return (
-          <span className='highlight'>{c.scheduled} | EST</span>
+          <span className='highlight'>
+            {new Date(game.startTimeUTC).toLocaleTimeString('en-US', {
+              hour: 'numeric',
+              minute: '2-digit',
+              second: '2-digit',
+              hour12: true,
+              timeZoneName: 'short' 
+            })}
+          </span>
         );
 
       case 'LIVE':
+      case 'CRIT':
         return (
           <><span className='highlight'>{c.period <= 3 ? `P${c.period}` : 'OT'}</span>{c.timeRemaining}</>
         );
 
+      case 'FINAL':
       case 'OFF':
         return (
-          <span>FINAL</span>
+          <span>
+            <span>FINAL </span>
+            {(c.periodType === 'OT' || c.periodType === 'SO') && (
+              <>
+                <span>• </span>
+                <span className="highlight">{c.periodType}</span>
+              </>
+            )}
+          </span>
         );
 
       default:
@@ -342,10 +183,13 @@ const AllGames = ({ date }) => {
       id: g_id,
       gameDate: data.gameDate ?? '',
       period: data.period?.number ?? '',
+      periodType: data.period?.periodType ?? '',
       timeRemaining: data.period?.timeRemaining ?? '',
       lastUpdated: data.lastUpdated ?? '',
       gameState: data.gameState ?? '',
       scheduled: data.scheduled ?? '',
+      startTimeUTC: data.startTimeUTC ?? '',
+      isShootoutGame: '',
       home: {
         name: data.teams?.home?.name ?? '',
         abbrev: data.teams?.home?.abbrev ?? '',
@@ -372,7 +216,7 @@ const AllGames = ({ date }) => {
     if (strength === 'ALL') return true;
     if (strength === 'EV') return s.strengthState === 'EVEN';
     if (strength === 'ALL w/o EN') {
-      return s.strengthState !== 'AWAY EN' && s.strengthState !== 'HOME EN';
+      return s.strengthState !== 'AWAY NET EMPTY' && s.strengthState !== 'HOME NET EMPTY';
     }
     return true;
   });
@@ -414,17 +258,35 @@ const ChosenGame = ({ game }) => {
     switch (c.gameState) {
       case 'FUT':
         return (
-          <span className='highlight'>{c.scheduled} | EST</span>
+          <span className='highlight'>
+            {new Date(game.startTimeUTC).toLocaleTimeString('en-US', {
+              hour: 'numeric',
+              minute: '2-digit',
+              second: '2-digit',
+              hour12: true,
+              timeZoneName: 'short' 
+            })}
+          </span>
         );
 
       case 'LIVE':
+      case 'CRIT':
         return (
           <><span className='highlight'>{c.period <= 3 ? `P${c.period}` : 'OT'}</span>{c.timeRemaining}</>
         );
 
+      case 'FINAL':
       case 'OFF':
         return (
-          <span>FINAL</span>
+          <span>
+            <span>FINAL </span>
+            {(c.periodType === 'OT' || c.periodType === 'SO') && (
+              <>
+                <span>• </span>
+                <span className="highlight">{c.periodType}</span>
+              </>
+            )}
+          </span>
         );
 
       default:
@@ -504,7 +366,7 @@ const GameStatistics = ({ game, strength }) => {
   // Stores the currently selected filters.
   const [filters, setFilters] = useState({
     shotType: ['goal', 'shot-on-goal', 'missed-shot', 'blocked-shot'],
-    period: [1, 2, 3],
+    period: [1, 2, 3, 4],
     position: ["C", "D", "G", "L", "R"],
     players: []
   });
@@ -538,7 +400,9 @@ const GameStatistics = ({ game, strength }) => {
     period: [
       { label: '1st', value: 1 },
       { label: '2nd', value: 2 },
-      { label: '3rd', value: 3 }
+      { label: '3rd', value: 3 },
+      { label: 'OT', value: 4 },
+      { label: 'SO', value: 5 }
     ],
 
     position: [
@@ -572,18 +436,34 @@ const GameStatistics = ({ game, strength }) => {
 
   // Loop through the fetched shots and organize them by team, then type.
   const sorted = {};
+  let shootout = false;
+  let shootoutWinner = "";
   shotsArr.forEach((s) => {
     const team = s.eventOwnerTeam;
     const type = s.typeDescKey;
 
+    // Do not count shootout goals as goals.
+    if (s.period?.periodType === 'SO') { 
+      shootout = true;
+      if (type === 'goal') {
+        shootoutWinner = team;
+      }
+      return; 
+    }
+
     // Create an empty object for a team if it doesn't exist.
     if (!sorted[team]) { sorted[team] = {}; }
-
     sorted[team][type] = (sorted[team][type] || 0) + 1;
 
     // Goals are considered shots-on-goal.
     if (type === 'goal') { sorted[team]['shot-on-goal'] = (sorted[team]['shot-on-goal'] || 0) + 1; }
   });
+
+  // Increment shootout winner by 1, if applicable.
+  if (shootout && shootoutWinner) {
+    sorted.isShootoutGame = true;
+    sorted[shootoutWinner]['goal'] = (sorted[shootoutWinner]['goal'] || 0) + 1;
+  }
 
   // Get the amount of shots of a given type if it exists, 0 if it does not.
   const getCount = (abbrev, type) => sorted[abbrev]?.[type] || 0;
@@ -612,11 +492,27 @@ const GameStatistics = ({ game, strength }) => {
     return acc;
   }, {});
 
+  const time = game.lastUpdated?.seconds 
+  ? new Date(game.lastUpdated.seconds * 1000).toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      timeZoneName: 'short'
+    })
+  : 'Loading...';
+
+  const common = {
+    fill: "#0c1f99",
+    fillOpacity: 0.75,
+    stroke: 'rgba(235, 235, 235, 1)',
+    strokeWidth: 3
+  }
+
   return (
     <div style={{color: 'white'}}>
       {/* Rink and Toggles */}
       <div className='rinkcard'>
-        <h2 className='gameHeader'>Shotmap | <i>Last Updated: {game.lastUpdated}</i></h2>
+        <h2 className='gameHeader'>Shotmap • <i>Last Updated: {time}</i></h2>
         <div style={{textAlign: 'center', margin: '4px'}}>
           <i>Data reflects plays made under the <b>{strength.toUpperCase()}</b> strength state.</i>
         </div>
@@ -625,13 +521,42 @@ const GameStatistics = ({ game, strength }) => {
             <ToggleMenu key={category} category={category} options={options} selected={filters[category]} onToggle={(v) => toggleFilter(category, v)} />
           ))}
         </div>    
+        <div style={{display: 'flex', flexDirection: 'row', gap: '20px', justifyContent: 'center', margin: '10px'}}>
+          <div style={{display: 'flex', alignItems: 'center'}}>
+            <p style={{ margin: '0 8px 0 0' }}>Goal</p>
+            <svg width="25" height="25" viewBox="0 0 100 100" style={{ overflow: 'visible' }}>
+              <polygon {...common} points="50,-5 0,85 100,85" />
+            </svg>
+          </div>
+
+          <div style={{display: 'flex', alignItems: 'center'}}>
+            <p style={{ margin: '0 8px 0 0' }}>Shot-On-Goal</p>
+            <svg width="25" height="25" viewBox="0 0 100 100" style={{ overflow: 'visible' }}>
+              <circle {...common} cx={50} cy={50} r="40" />
+            </svg>
+          </div>
+
+          <div style={{display: 'flex', alignItems: 'center'}}>
+            <p style={{ margin: '0 8px 0 0' }}>Missed Shot</p>
+            <svg width="25" height="25" viewBox="0 0 100 100" style={{ overflow: 'visible' }}>
+              <rect {...common} x="10" y="10" width="80" height="80" rx="15" />
+            </svg>
+          </div>
+
+          <div style={{display: 'flex', alignItems: 'center'}}>
+            <p style={{ margin: '0 8px 0 0' }}>Blocked Shot</p>
+            <svg width="25" height="25" viewBox="0 0 100 100" style={{ overflow: 'visible' }}>
+              <polygon {...common} points="50,5 95,50 50,95 5,50" />
+            </svg>
+          </div>
+        </div>
         <SVGRink key={game.id} arr={filteredShots} gameid={game.id} home={game.home} away={game.away} strength={strength} />
       </div>
 
       {/* Statistics Table */}
       <div className='game-statistics'>
           <div className='game-statistics-header'>
-            <h2 className='gameHeader'>Game Statistics | <i>Last Updated: {game.lastUpdated}</i></h2>
+            <h2 className='gameHeader'>Game Statistics • <i>Last Updated: {time}</i></h2>
           </div>
           <div style={{textAlign: 'center', margin: '4px'}}>
             <i>Data reflects plays made under the <b>{strength.toUpperCase()}</b> strength state.</i>
@@ -654,25 +579,30 @@ const GameStatistics = ({ game, strength }) => {
           {stats.map((stat) => {
             const homeVal = statsLookup[stat.key].home;
             const awayVal = statsLookup[stat.key].away;
+            const goalRow = stat.key === 'goal';
+            const showSO = goalRow && sorted.isShootoutGame;
 
             const homeStyles = {
-              backgroundColor: homeVal > awayVal ? TEAM_COLORS[game.home.abbrev].primary : '#222',
+              backgroundColor: homeVal > awayVal ? TEAM_COLOURS[game.home.abbrev].primary : '#222',
               backgroundImage: homeVal > awayVal 
                 ? 'linear-gradient(to bottom, rgba(255,255,255,0.2), rgba(255,255,255,0))' 
                 : 'none',
-              color: (['BOS', 'NSH'].includes(game.home.abbrev) && homeVal > awayVal) ? '#000' : '#FFF'
+              color: (['BOS', 'NSH', 'UTA'].includes(game.home.abbrev) && homeVal > awayVal) ? '#000' : '#FFF'
             };
 
             const awayStyles = {
-              backgroundColor: awayVal > homeVal ? TEAM_COLORS[game.away.abbrev].primary : '#222',
+              backgroundColor: awayVal > homeVal ? TEAM_COLOURS[game.away.abbrev].primary : '#222',
               backgroundImage: awayVal > homeVal 
                 ? 'linear-gradient(to bottom, rgba(255,255,255,0.2), rgba(255,255,255,0))' 
                 : 'none',
-              color: (['BOS', 'NSH'].includes(game.away.abbrev) && awayVal > homeVal) ? '#000' : '#FFF'
+              color: (['BOS', 'NSH', 'UTA'].includes(game.away.abbrev) && awayVal > homeVal) ? '#000' : '#FFF'
             };
 
             return (
               <div key={stat.key} style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center',  margin: '5px 0' }}>
+                {showSO && homeVal > awayVal && (
+                  <span style={{ fontSize: '0.6rem', verticalAlign: 'middle', marginLeft: '4px' }}>(SO)</span>
+                )}
                 <div className='stats-card' style={homeStyles}>
                   <p>{homeVal}</p>
                 </div>
@@ -680,6 +610,9 @@ const GameStatistics = ({ game, strength }) => {
                 <div className='stats-card' style={awayStyles}>
                   <p>{awayVal}</p>
                 </div>
+                {showSO && awayVal > homeVal && (
+                  <span style={{ fontSize: '0.6rem', verticalAlign: 'middle', marginLeft: '4px' }}>(SO)</span>
+                )}
               </div>
             );
           })}
@@ -689,7 +622,7 @@ const GameStatistics = ({ game, strength }) => {
 }
 
 function App({ pageId }) {
-  const [date, setDate] = useState(new Date(2026, 2, 31));
+  const [date, setDate] = useState(new Date(2026, 3, 7));
   const [showCalendar, setShowCalendar] = useState(false);
 
   const dateChange = (newDate) => {

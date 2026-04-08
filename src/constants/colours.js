@@ -1,4 +1,4 @@
-export const TEAM_COLORS = {
+export const TEAM_COLOURS = {
     ANA: { primary: 'rgba(244, 117, 33, 1)', secondary: 'rgba(185, 151, 91, 0.66)' },
     BOS: { primary: 'rgba(255, 184, 28, 1)', secondary: 'rgba(17, 17, 17, 0.66)' },
     BUF: { primary: 'rgba(0, 38, 84, 1)', secondary: 'rgba(252, 181, 20, 0.66)' },
