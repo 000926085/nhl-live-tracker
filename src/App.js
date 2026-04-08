@@ -45,7 +45,7 @@ const SVGRink = ( {arr, gameid, home, away, strength} ) => {
       <svg viewBox="-1 -1 202 87">
         <defs>
           <clipPath id="rinkClip">
-            <rect x="0" y="0" width="200" height="85" rx="15" ry="15" />
+            <rect x="-2" y="-2" width="204" height="89" rx="15" ry="15" />
           </clipPath>
         </defs>
 
@@ -127,8 +127,9 @@ const SVGRink = ( {arr, gameid, home, away, strength} ) => {
  * @returns {JSX.Element} represents a shot made during this game
  */
 const Shot = ( {shot, selected, onClick} ) => {
-  const x = shot.coords.xCoord + 100
-  const y = 42.5 - shot.coords.yCoord
+  const pad = 2.5; 
+  const x = Math.max(pad, Math.min(200 - pad, shot.coords.xCoord + 100));
+  const y = Math.max(pad, Math.min(85 - pad, 42.5 - shot.coords.yCoord));
 
   const common = {
     key: shot.id,
@@ -154,7 +155,7 @@ const Shot = ( {shot, selected, onClick} ) => {
     case 'missed-shot':
       const s = 5.5 / 2
       return (
-        <rect {...common} x={x - s} y={y - s} height={s} width={s} rx="0.5" />
+        <rect {...common} x={x - s/2} y={y - s/2} height={s} width={s} rx="0.5" />
       )
 
     default:
@@ -192,36 +193,15 @@ const StrengthToggle = ({active, onChange}) => {
   const btns = ['ALL', 'EV', 'ALL w/o EN'];
 
   return (
-    <div style={{
-      display: 'flex',
-      flexDirection: 'row',     // Start as a row
-      flexWrap: 'wrap',        // Allow wrapping to a second line
-      alignItems: 'center',
-      justifyContent: 'center', // Keep everything centered when it wraps
-      gap: '12px',             // Perfectly uniform space (vertical AND horizontal)
-      padding: '10px 0',
-      width: '100%'
-    }}>
-      <h1 className='title' style={{ 
-        margin: 0,             // Remove default margins that cause uneven spacing
-        fontSize: '1.6rem',
-      }}>
+    <div style={{display: 'flex', flexDirection: 'row',  flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center',  gap: '12px', padding: '10px 0', width: '100%' }}>
+      <h1 className='title' style={{ margin: 0, fontSize: '1.6rem',}}>
         Strength State
       </h1>
 
       {/* Button Group */}
-      <div style={{ 
-        display: 'flex', 
-        gap: '8px',            // Spacing specifically between the buttons
-        flexWrap: 'wrap',
-        justifyContent: 'center' 
-      }}>
+      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'center' }}>
         {btns.map((b) => (
-          <button 
-            key={b} 
-            className={`item ${b === active ? 'btn_on' : 'btn_off'} btn`} 
-            onClick={() => onChange(b)}
-          >
+          <button key={b} className={`item ${b === active ? 'btn_on' : 'btn_off'} btn`} onClick={() => onChange(b)}>
             {b}
           </button>
         ))}
@@ -243,7 +223,7 @@ const GameCard = ({ game, selected, onSelect }) => {
 
       case 'LIVE':
         return (
-          <><span className='highlight'>P{c.period}</span>{c.timeRemaining}</>
+          <><span className='highlight'>{c.period <= 3 ? `P${c.period}` : 'OT'}</span>{c.timeRemaining}</>
         );
 
       case 'OFF':
@@ -406,8 +386,6 @@ const AllGames = ({ date }) => {
     }
   };
 
-  console.log(displayData);
-
   return (
     <div>
       <div className='container' style={{flexWrap: 'wrap'}}>
@@ -441,7 +419,7 @@ const ChosenGame = ({ game }) => {
 
       case 'LIVE':
         return (
-          <><span className='highlight'>P{c.period}</span>{c.timeRemaining}</>
+          <><span className='highlight'>{c.period <= 3 ? `P${c.period}` : 'OT'}</span>{c.timeRemaining}</>
         );
 
       case 'OFF':
@@ -641,11 +619,9 @@ const GameStatistics = ({ game, strength }) => {
       {/* Rink and Toggles */}
       <div className='rinkcard'>
         <h2 className='gameHeader'>Shotmap | <i>Last Updated: {game.lastUpdated}</i></h2>
-        {strength !== 'ALL' && (
-            <div>
-              <i>Data reflects plays made under the <b>{strength.toUpperCase()}</b> strength state.</i>
-            </div>
-          )}
+        <div style={{textAlign: 'center', margin: '4px'}}>
+          <i>Data reflects plays made under the <b>{strength.toUpperCase()}</b> strength state.</i>
+        </div>
         <div className='filter-row'>
           {Object.entries(dropdownOptions).map(([category, options]) => (
             <ToggleMenu key={category} category={category} options={options} selected={filters[category]} onToggle={(v) => toggleFilter(category, v)} />
@@ -659,11 +635,9 @@ const GameStatistics = ({ game, strength }) => {
           <div className='game-statistics-header'>
             <h2 className='gameHeader'>Game Statistics | <i>Last Updated: {game.lastUpdated}</i></h2>
           </div>
-          {strength !== 'ALL' && (
-            <div>
-              <i>Data reflects plays made under the <b>{strength.toUpperCase()}</b> strength state.</i>
-            </div>
-          )}
+          <div style={{textAlign: 'center', margin: '4px'}}>
+            <i>Data reflects plays made under the <b>{strength.toUpperCase()}</b> strength state.</i>
+          </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 1fr', alignItems: 'center', width: '100%'}}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '10px' }}>
@@ -688,7 +662,7 @@ const GameStatistics = ({ game, strength }) => {
               backgroundImage: homeVal > awayVal 
                 ? 'linear-gradient(to bottom, rgba(255,255,255,0.2), rgba(255,255,255,0))' 
                 : 'none',
-              color: ['BOS', 'NSH'].includes(game.home.abbrev) ? '#000' : '#FFF'
+              color: (['BOS', 'NSH'].includes(game.home.abbrev) && homeVal > awayVal) ? '#000' : '#FFF'
             };
 
             const awayStyles = {
@@ -696,7 +670,7 @@ const GameStatistics = ({ game, strength }) => {
               backgroundImage: awayVal > homeVal 
                 ? 'linear-gradient(to bottom, rgba(255,255,255,0.2), rgba(255,255,255,0))' 
                 : 'none',
-              color: ['BOS', 'NSH'].includes(game.away.abbrev) ? '#000' : '#FFF'
+              color: (['BOS', 'NSH'].includes(game.away.abbrev) && awayVal > homeVal) ? '#000' : '#FFF'
             };
 
             return (
