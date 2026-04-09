@@ -63,18 +63,20 @@ const GameStatistics = ({ game, strength }) => {
 
   // Handles setting a new roster once another game is selected.
   useEffect(() => {
-    if (game) {
+    if (game?.id) {
       const newPlayers = [
         ...game.home.players.map(p => p.player),
         ...game.away.players.map(p => p.player)
       ];
       
-      setFilters(prev => ({
-        ...prev,
+      setFilters({
+        shotType: ['goal', 'shot-on-goal', 'missed-shot', 'blocked-shot'],
+        period: [1, 2, 3, 4], 
+        position: ["C", "D", "G", "L", "R"],
         players: newPlayers 
-      }));
+      });
     }
-  }, [game]);
+  }, [game?.id]);
 
   if (!game) { return <div><p>Loading!</p></div> }
 
