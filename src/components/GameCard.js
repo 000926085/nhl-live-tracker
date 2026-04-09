@@ -1,5 +1,5 @@
 /**
- * 
+ * Helper function to that dictates the header contents of a game card. 
  * @param {Object} game contains the data pertaining to a game.
  * @returns {JSX.Element} span containing the appropriate header text for a game card.
  */
@@ -47,11 +47,11 @@ export const gameStatus = (game) => {
 };
 
 /**
- * 
+ * Constructs a card representation of a game that displays period information and the score.
  * @param {Object} game contains the data pertaining to a game.
  * @param {boolean} selected determines the card border colour.
  * @param {Function} onSelect callback for determining which card was selected.
- * @returns {JSX.Element}
+ * @returns {JSX.Element} card with data pertaining to a game.
  */
 const GameCard = ({ game, selected, onSelect }) => {
   return (

@@ -103,40 +103,40 @@ const SVGRink = ( {arr, gameid, home, away, strength, def} ) => {
         <path d="M 11 36.5 A 6 6 0 0 1 11 48.5" fill="rgba(0, 150, 255, 0.2)" stroke="rgb(200, 16, 46)" strokeWidth="0.33" />
         <path d="M 189 36.5 A 6 6 0 0 0 189 48.5" fill="rgba(0, 150, 255, 0.2)" stroke="rgb(200, 16, 46)" strokeWidth="0.33" />
 
+        
         {/* Shot Mapping */}
-        {/* Shot Mapping */}
-<g clipPath="url(#rinkClip)">
-  {Array.from(new Set(arr.map(s => s.id))).map(id => {
-    const s = arr.find(shot => shot.id === id);
-    const isHomeTeam = s.eventOwnerTeam === home.abbrev;
+        <g clipPath="url(#rinkClip)">
+          {Array.from(new Set(arr.map(s => s.id))).map(id => {
+            const s = arr.find(shot => shot.id === id);
+            const isHomeTeam = s.eventOwnerTeam === home.abbrev;
 
-    // Determine if home is currently attacking the right side.
-    const homeStartsDefendingRight = def === 'right';
-    const evenPeriod = s.period.number % 2 === 0;
-    const homeAttackingRight = homeStartsDefendingRight ? evenPeriod : !evenPeriod;
-    const teamAttackingNow = isHomeTeam ? homeAttackingRight : !homeAttackingRight;
+            // Determine if home is currently attacking the right side.
+            const homeStartsDefendingRight = def === 'right';
+            const evenPeriod = s.period.number % 2 === 0;
+            const homeAttackingRight = homeStartsDefendingRight ? evenPeriod : !evenPeriod;
+            const teamAttackingNow = isHomeTeam ? homeAttackingRight : !homeAttackingRight;
 
-    let finalX = s.coords.xCoord;
-    let finalY = s.coords.yCoord;
-    if (!teamAttackingNow) {
-      finalX *= -1;
-      finalY *= -1;
-    }
-    if (!isHomeTeam) {
-      finalX *= -1;
-      finalY *= -1;
-    }
+            let finalX = s.coords.xCoord;
+            let finalY = s.coords.yCoord;
+            if (!teamAttackingNow) {
+              finalX *= -1;
+              finalY *= -1;
+            }
+            if (!isHomeTeam) {
+              finalX *= -1;
+              finalY *= -1;
+            }
 
-    return (
-      <Shot 
-        key={`${gameid}-${id}-${s.typeDescKey}`} 
-        shot={{ ...s, coords: { ...s.coords, xCoord: finalX, yCoord: finalY } }}
-        selected={selectedShot?.id === s.id} 
-        onClick={(e) => handleClick(e, s)} 
-      />
-    );
-  })}
-</g>
+            return (
+              <Shot 
+                key={`${gameid}-${id}-${s.typeDescKey}`} 
+                shot={{ ...s, coords: { ...s.coords, xCoord: finalX, yCoord: finalY } }}
+                selected={selectedShot?.id === s.id} 
+                onClick={(e) => handleClick(e, s)} 
+              />
+            );
+          })}
+        </g>
 
         {/* Cover for any clipping lines */}
         <rect x="0" y="0" width="200" height="85" rx="15" fill="none" stroke="black" strokeWidth="0.33" />
