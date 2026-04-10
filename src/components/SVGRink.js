@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { TEAM_COLOURS } from '../constants/colours';
 
 /**
@@ -204,22 +204,52 @@ const Shot = ( {shot, selected, onClick} ) => {
  */
 const ShotDetails = ({ shot, pos, onClose }) => {
   const shotType = shot.typeDescKey.replace("-", " ").split(" ")[0];
+  const cardRef = useRef(null);
+
+  // Handle closing when clicking outside of the card.
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (cardRef.current && !cardRef.current.contains(event.target)) {
+        onClose();
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [onClose]);
 
   return (
-    <div className="shot-details" style={{ left: `${pos.x}%`, top: `${pos.y}%`}}>
-      {/* Team Logo Container */}
-      <div>
-        <img className='teamLogo' src={`https://assets.nhle.com/logos/nhl/svg/${shot.eventOwnerTeam}_light.svg`} alt="Team Logo" />
-      </div>
+    <div ref={cardRef} className="shot-details" 
+      style={{ 
+        left: `${pos.x}%`, 
+        top: `${pos.y}%`,
+        transform: pos.x > 50 ? 'translate(-100%, -50%)' : 'translate(0, -50%)',
+        marginLeft: pos.x > 50 ? '-10px' : '10px',
+      }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'clamp(30px, 4vw, 60px) 1fr',  gap: 'clamp(6px, 1.5vw, 12px)', alignItems: 'center' }}>
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+          <img src={`https://assets.nhle.com/logos/nhl/svg/${shot.eventOwnerTeam}_light.svg`} alt="Logo" style={{ width: '100%', height: 'auto' }} />
+        </div>
 
-      {/* Details Container */}
-      <div style={{ color: 'white' }}>
-        <p style={{fontWeight: 'bold'}}>{shot.eventOwnerTeam} {shotType}</p>
-        <p>{shot.player.shootingPlayer}</p>
-        <p>P{shot.period.number}, {shot.period.timeRemaining}</p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0px' }}>
+          <span style={{ fontSize: 'clamp(9px, 0.9vw, 11px)', fontWeight: 'bold', textTransform: 'uppercase', opacity: 0.9 }}>
+            {shot.eventOwnerTeam} {shotType}
+          </span>
+
+          <span style={{ fontSize: 'clamp(12px, 1.5vw, 18px)', fontWeight: '700', lineHeight: '1.1' }}>
+            {shot.player.shootingPlayer}
+          </span>
+
+          {/* Metadata: Scales between 10px and 13px */}
+          <span style={{ fontSize: 'clamp(10px, 1vw, 13px)', opacity: 0.8, marginTop: '2px' }}>
+            P{shot.period.number} · {shot.period.timeRemaining} · {shot.strengthState}
+          </span>
+        </div>
       </div>
     </div>
-  )
+  );
 }
 
 export default SVGRink;

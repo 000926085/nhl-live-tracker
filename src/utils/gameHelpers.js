@@ -44,14 +44,18 @@ export const sanitize = (game) => {
  * @param {Object} categories the filter choices.
  * @returns {Array} the shots containing the shots after filtering.
  */
-export const filterShots = (shots, strength, categories) => {
+export const filterShots = (shots, strength, categories, home) => {
     if (!shots) return [];
 
     return shots.filter(s => {
         // Handle strength state.
         if (strength === 'EV' && s.strengthState !== 'EVEN') return false;
-        if (strength === 'ALL w/o EN') {
-            if (s.strengthState === 'AWAY NET EMPTY' || s.strengthState === 'HOME NET EMPTY') {
+        if (strength === 'ALL w/o ENG') {
+            const opponentNetEmpty = (s.eventOwnerTeam === home) 
+                ? s.strengthState.includes("AWAY NET EMPTY") 
+                : s.strengthState.includes("HOME NET EMPTY");
+
+            if (opponentNetEmpty && s.typeDescKey === 'goal') {
                 return false;
             }
         }

@@ -46,7 +46,7 @@ const AllGames = ({ date }) => {
 }
 
 function App({ pageId }) {
-  const [date, setDate] = useState(new Date(2026, 3, 8));
+  const [date, setDate] = useState(new Date(2026, 3, 7));
   const [showCalendar, setShowCalendar] = useState(false);
 
   const dateChange = (newDate) => {

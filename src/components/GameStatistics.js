@@ -24,7 +24,7 @@ const GameStatistics = ({ game, strength }) => {
   const dropdownOptions = {
     shotType: [
       { label: 'Goals', value: 'goal' },
-      { label: 'Shots on Goal', value: 'shot-on-goal' },
+      { label: 'Shots-On-Goal', value: 'shot-on-goal' },
       { label: 'Missed Shots', value: 'missed-shot' },
       { label: 'Blocked Shots', value: 'blocked-shot' },
     ],
@@ -106,16 +106,21 @@ const GameStatistics = ({ game, strength }) => {
   };
 
   const shotsArr = game.shots?.shots || [];
-  const filteredShots = filterShots(shotsArr, strength, filters);
+  const filteredShots = filterShots(shotsArr, strength, filters, game.home.abbrev);
 
   const getOpponent = (teamAbbrev) => {
     return teamAbbrev === game.home.abbrev ? game.away.abbrev : game.home.abbrev;
   };
 
-  // Loop through the fetched shots and organize them by team, then type.
-  const sorted = {};
+  const sorted = {
+    [game.home.abbrev]: {},
+    [game.away.abbrev]: {}
+  };
+
   let shootout = false;
   let shootoutWinner = "";
+
+  // Loop through the fetched shots and organize them by team, then type.
   filteredShots.forEach((s) => {
     let team = s.eventOwnerTeam;
     const type = s.typeDescKey;

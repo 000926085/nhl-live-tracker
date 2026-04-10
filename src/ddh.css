@@ -334,17 +334,29 @@
 
 .shot-details {
   display: flex;
-  align-items: center;
-  justify-content: flex-start;
+  flex-direction: row;
   position: absolute;
   z-index: 100;
   background: linear-gradient(180deg, rgba(38, 132, 255, 1) 0%, rgba(23, 79, 153, 1) 100%);
+  background-image: linear-gradient(145deg, #2b7fff, #1652b1);
   border: 2px solid #152C9E;
   border-radius: 12.5px;
   color: white;
-  padding: 12px;
+  padding: 8px 12px;
   box-shadow: 0 4px 15px rgba(0,0,0,0.5);
   min-width: 150px;
+  font-family: sans-serif;
+  width: max-content;
+  max-width: 40vw;
+  padding: clamp(6px, 1vw, 12px);
+  white-space: nowrap;
+}
+
+.shot-information {
+  font-size: 0.75rem; 
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .legend { 

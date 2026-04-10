@@ -5,7 +5,7 @@
  * @returns {JSX.Element} row of buttons to change the strength state.
  */
 const StrengthToggle = ({active, onChange}) => {
-  const btns = ['ALL', 'EV', 'ALL w/o EN'];
+  const btns = ['ALL', 'EV', 'ALL w/o ENG'];
 
   return (
     <div style={{display: 'flex', flexDirection: 'row',  flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center',  gap: '12px', padding: '10px 0', width: '100%' }}>
