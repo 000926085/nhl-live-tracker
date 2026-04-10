@@ -74,7 +74,7 @@ const ChosenGame = ({ game }) => {
           </div>
           
           <div>
-            <h1 className='scoreDisplay'>{game.home.score} - {game.away.score}</h1>
+            <h1 className='chosenGame-scoreDisplay'>{game.home.score} - {game.away.score}</h1>
           </div>
 
           <div className='teamC'>
