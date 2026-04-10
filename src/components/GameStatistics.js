@@ -244,17 +244,19 @@ const GameStatistics = ({ game, strength }) => {
             <i>Data reflects plays made under the <b>{strength.toUpperCase()}</b> strength state.</i>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 1fr', alignItems: 'center', width: '100%'}}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '10px' }}>
-              <img className='teamLogo' src={`https://assets.nhle.com/logos/nhl/svg/${game.home.abbrev}_light.svg`} alt="Team Logo" />
-              <span style={{ fontWeight: 'bold', fontSize: '1.6rem', textAlign: 'right' }}>{game.home.abbrev}</span>
+          <div className="stats-team-header">
+            {/* Home Team */}
+            <div className="stats-home">
+              <img className='teamLogo' src={`https://assets.nhle.com/logos/nhl/svg/${game.home.abbrev}_light.svg`} alt="Home Logo" />
+              <span className="team-abbrev">{game.home.abbrev}</span>
             </div>
 
-            <div style={{ textAlign: 'center', fontSize: '1.6rem', fontWeight: 'bold'}}>VS.</div>
+            <div className="stats-vs-divider">VS.</div>
 
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '10px' }}>
-              <span style={{ fontWeight: 'bold', fontSize: '1.6rem', textAlign: 'left' }}>{game.away.abbrev}</span>
-              <img className='teamLogo' src={`https://assets.nhle.com/logos/nhl/svg/${game.away.abbrev}_light.svg`} alt="Team Logo" />
+            {/* Away Team */}
+            <div className="stats-away">
+              <span className="team-abbrev">{game.away.abbrev}</span>
+              <img className='teamLogo' src={`https://assets.nhle.com/logos/nhl/svg/${game.away.abbrev}_light.svg`} alt="Away Logo" />
             </div>
           </div>
 

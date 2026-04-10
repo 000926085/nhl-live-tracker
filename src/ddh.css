@@ -365,7 +365,7 @@
   flex-wrap: wrap; 
   gap: 20px;
   justify-content: center;
-  margin: 4px 10px 
+  margin: 4px 10px; 
 }
 
 .legend-item {
@@ -375,7 +375,7 @@
   white-space: nowrap;
 }
 
-@media (max-width: 500px) {
+@media (max-width: 650px) {
   .legend {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -403,6 +403,57 @@
     width: 18px;
     height: 18px;
     justify-self: start;
+  }
+}
+
+.stats-team-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin: 15px 0;
+  gap: 10px;
+}
+
+.stats-home, .stats-away {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  gap: 8px;
+}
+
+.stats-home { justify-content: flex-end; } 
+.stats-away { justify-content: flex-start; } 
+
+.stats-vs-divider {
+  flex: 0 0 auto;
+  text-align: center;
+  font-weight: bold;
+  font-size: 1.1rem;
+  color: #ccc;
+  min-width: 40px;
+}
+
+.team-abbrev {
+  font-weight: bold !important;
+  font-size: clamp(1.1rem, 4vw, 1.4rem) !important;
+}
+
+@media (max-width: 650px) {
+  .stats-home, .stats-away {
+    display: flex !important;
+    align-items: center !important; 
+    flex: 1 !important;
+    gap: 0px !important;
+  }
+
+  .team-abbrev {
+    font-size: 1.1rem !important;
+  }
+
+  .stats-team-header > .teamLogo {
+    width: 80px !important;
+    height: 80px !important;
   }
 }
 
