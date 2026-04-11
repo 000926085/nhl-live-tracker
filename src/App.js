@@ -46,11 +46,11 @@ const AllGames = ({ date }) => {
 }
 
 /**
- * Main application component.
- * @param {Integer} pageId unused.
- * @returns {JSX.Element} The rendered dashboard with date selection and game listings.
+ * Dashboard component for displaying hockey games.
+ * @param {D} pageId unused. 
+ * @returns {JSX.Element} header date text, select button and the AllGames component. 
  */
-function App({ pageId }) {
+const Dashboard = ({ pageId }) => {
   const [date, setDate] = useState(new Date());
   const [showCalendar, setShowCalendar] = useState(false);
 
@@ -61,13 +61,11 @@ function App({ pageId }) {
 
   return (
     <div style={{ backgroundColor: 'black'}}>
-      {/* Date and selection button */}
       <div className='date-header-container'>
         <h1 className='dashboard' style={{ margin: '0 0 10px 0' }}>{date.toLocaleDateString('en-ZA')}</h1>
         <button className={`btn_on btn`} onClick={() => setShowCalendar(!showCalendar)}>Select Date</button>
       </div>
 
-      {/* Calendar, shown upon request */}
       {showCalendar && (
         <div className='modal' onClick={() => setShowCalendar(false)}>
           <div className='calendar-modal' onClick={(e) => e.stopPropagation()}>
@@ -78,6 +76,20 @@ function App({ pageId }) {
 
       <AllGames date={date} />
     </div>
+  );
+};
+
+/**
+ * Main application component.
+ * @param {Integer} pageId 
+ * @returns component container for handling URLs.
+ */
+function App({ pageId }) {
+  return (
+    <Routes>
+      <Route path="/" element={<Dashboard pageId={pageId} />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   );
 }
 
