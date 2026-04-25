@@ -231,11 +231,21 @@ const ShotDetails = ({ shot, pos, onClose }) => {
   }, [onClose]);
 
   // Display the period and time remaining within the period.
-  const p_timeDisplay = shot.period.number > 3
-    ? shot.period.number <= 4
-      ? `OT · ${shot.period.timeRemaining}`
-      : 'SO'
-    : `P${shot.period.number} · ${shot.period.timeRemaining}`
+  const p_timeDisplay = (() => {
+    const { number, periodType, timeRemaining } = shot.period;
+
+    // Check for shootout.
+    if ((periodType === 'SO' || number === 5) && !timeRemaining) { return 'SO'; }
+
+    // Check for overtime.
+    else if (number >= 4) { 
+      const ot = (number === 4) ? 'OT' : `${number - 3}OT`
+      return `${ot} · ${timeRemaining}`;
+    }
+
+    // Regulation.
+    return `P${number} · ${timeRemaining}`;
+  })();
 
   let assistString = "";
   if (shot.assists) {

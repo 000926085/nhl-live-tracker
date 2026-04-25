@@ -16,7 +16,7 @@ const GameStatistics = ({ game, strength }) => {
   // Stores the currently selected filters.
   const [filters, setFilters] = useState({
     shotType: ['goal', 'shot-on-goal', 'missed-shot', 'blocked-shot'],
-    period: [1, 2, 3, 4],
+    period: [1, 2, 3],
     position: ["C", "D", "G", "L", "R"],
     players: []
   });
@@ -33,9 +33,7 @@ const GameStatistics = ({ game, strength }) => {
     period: [
       { label: '1st', value: 1 },
       { label: '2nd', value: 2 },
-      { label: '3rd', value: 3 },
-      { label: 'OT', value: 4 },
-      { label: 'SO', value: 5 }
+      { label: '3rd', value: 3 }
     ],
 
     position: [
@@ -55,6 +53,25 @@ const GameStatistics = ({ game, strength }) => {
     }))
   }
 
+  const maxPeriod = Math.max(...(game.shots?.shots.map(s => s.period?.number) || [3]));
+
+  // Add the dropdown options for any periods past the initial three.
+  if (maxPeriod >= 4) {
+    for (let i = 4; i <= maxPeriod; i++) {
+      const isSO = game.shots?.shots.find(s => s.period?.number === i)?.period?.periodType === 'SO';
+
+      let label;
+      if (isSO) { label = "SO"; }
+      else if (i === 4) { label = "OT"; } 
+      else { label = `${i - 3}OT`; }
+
+      dropdownOptions["period"].push({ 
+        label: label,
+        value: i 
+      });
+    }
+  }
+
   const stats = [
     { label: 'Goals', key: 'goal' },
     { label: 'Shots-On-Goal', key: 'shot-on-goal' },
@@ -70,11 +87,22 @@ const GameStatistics = ({ game, strength }) => {
         ...game.home.players.map(p => p.player),
         ...game.away.players.map(p => p.player)
       ];
+
+      let defaultPeriods = [1, 2, 3];
+      const existingPeriods = [...new Set(game.shots?.shots.map(s => s.period?.number))];
+      existingPeriods.forEach(p => {
+        if (p >= 4) {
+          const isSO = game.shots?.shots.find(s => s.period?.number === p)?.period?.periodType === 'SO';
+          if (!isSO) {
+            defaultPeriods.push(p);
+          }
+        }
+      });
       
       // Default filters upon selecting a game.
       setFilters({
         shotType: ['goal', 'shot-on-goal', 'missed-shot', 'blocked-shot'],
-        period: [1, 2, 3, 4], 
+        period: [...new Set(defaultPeriods)],
         position: ["C", "D", "G", "L", "R"],
         players: newPlayers 
       });
