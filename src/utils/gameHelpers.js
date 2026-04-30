@@ -27,6 +27,7 @@ export const sanitize = (game) => {
             score: data.teams?.home?.score ?? 0,
             penaltyMinutes: data.teams?.home?.penaltyMinutes ?? 0,
             players: data.teams?.home?.players ?? [],
+            powerplays: data.teams?.home?.powerplays ?? {}
         },
         away: {
             name: data.teams?.away?.name ?? '',
@@ -34,6 +35,7 @@ export const sanitize = (game) => {
             score: data.teams?.away?.score ?? 0,
             penaltyMinutes: data.teams?.away?.penaltyMinutes ?? 0,
             players: data.teams?.away?.players ?? [],
+            powerplays: data.teams?.away?.powerplays ?? {}
         },
         shots: shots
     };

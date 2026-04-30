@@ -77,7 +77,9 @@ const GameStatistics = ({ game, strength }) => {
     { label: 'Shots-On-Goal', key: 'shot-on-goal' },
     { label: 'Blocked Shots', key: 'blocked-shot' },
     { label: 'Missed Shots', key: 'missed-shot' },
-    { label: 'Penalty Minutes', key: 'penaltyMinutes'}
+    { label: 'Penalty Minutes', key: 'penaltyMinutes'},
+    { label: 'PP Opportunities', key: 'opportunities'},
+    { label: 'Success Rate', key: 'success'}
   ];
 
   // Handles setting a new roster once another game is selected.
@@ -199,9 +201,11 @@ const GameStatistics = ({ game, strength }) => {
   };
 
   const statsLookup = stats.reduce((acc, stat) => {
+    const pp_field = stat.key === 'opportunities' || stat.key === 'success';
+
     acc[stat.key] = {
-      home: getCount(game.home.abbrev, stat.key),
-      away: getCount(game.away.abbrev, stat.key)
+      home: pp_field ? game.home.powerplays : getCount(game.home.abbrev, stat.key),
+      away: pp_field ? game.away.powerplays : getCount(game.away.abbrev, stat.key)
     };
     return acc;
   }, {});
@@ -326,10 +330,22 @@ const GameStatistics = ({ game, strength }) => {
 
           {/* Statistics Table */}
           {stats.map((stat) => {
-            const homeVal = statsLookup[stat.key].home;
-            const awayVal = statsLookup[stat.key].away;
+            const data = statsLookup[stat.key];
+            let homeVal, awayVal;
             const goalRow = stat.key === 'goal';
             const showSO = goalRow && sorted.isShootoutGame;
+
+            // Perform calculations on powerplay related fields.
+            if (stat.key === 'opportunities') {
+              homeVal = `${data.home.goals} / ${data.home.opportunities}`;
+              awayVal = `${data.away.goals} / ${data.away.opportunities}`;
+            } else if (stat.key === 'success') {
+              homeVal = `${((data.home.goals / data.home.opportunities) * 100 || 0).toFixed(1)}%`
+              awayVal = `${((data.away.goals / data.away.opportunities) * 100 || 0).toFixed(1)}%`
+            } else {
+              homeVal = data.home;
+              awayVal = data.away;
+            }
 
             const homeStyles = {
               backgroundColor: homeVal > awayVal 
